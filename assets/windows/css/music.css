@@ -1,0 +1,256 @@
+
+/* format the navbar icons */
+.navicon {
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    margin-right: 5px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border: #660700 solid 3px;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+/* animate on hover */
+
+a.navicon:hover {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+#navico1:hover ~ #navtitle1, #navico2:hover ~ #navtitle2,
+#navico3:hover ~ #navtitle3, #navico4:hover ~ #navtitle4,
+#navico5:hover ~ #navtitle5, #navico6:hover ~ #navtitle6,
+#navico7:hover ~ #navtitle7, #navico8:hover ~ #navtitle8,
+#navico9:hover ~ #navtitle9, #navico10:hover ~ #navtitle10{
+    opacity: 1;
+}
+
+/* give images to each navicon */
+#navico1 {
+    background: #666699 url('http://gw2mb.com/image/waypoint.png') no-repeat;
+    margin-left: 5px;
+}
+
+#navico2 {
+    background: url('http://gw2mb.com/image/bell.png') no-repeat;
+}
+
+#navico3 {
+    background: url('http://gw2mb.com/image/flute.png') no-repeat;
+}
+
+#navico4 {
+    background: url('http://gw2mb.com/image/horn.png') no-repeat;
+}
+
+#navico5 {
+    background: url('http://gw2mb.com/image/harp.png') no-repeat;
+}
+
+#navico6 {
+    background: url('http://gw2mb.com/image/lute.png') no-repeat;
+}
+
+#navico7 {
+    background: url('http://gw2mb.com/image/bell2.png') no-repeat;
+}
+
+#navico8 {
+    background: url('http://gw2mb.com/image/bass.png') no-repeat;
+}
+
+#navico9 {
+    background: url('http://gw2mb.com/image/chest.png') no-repeat;
+}
+
+#navico10 {
+    background: url('http://gw2mb.com/image/page.png') no-repeat;
+}
+
+/* this holds the combat mode background */
+#centerskillbackground{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: url('http://gw2mb.com/image/combat.png') no-repeat -161px -125px;
+    width: 878px;
+    height: 160px;
+    opacity: 100;
+    -webkit-transition: opacity .5s;
+    -moz-transition: opacity .5s;
+    -ms-transition: opacity .5s;
+    -o-transition: opacity .5s;
+    transition: opacity .5s;
+    border-radius: 10px;
+}
+
+/* The skill bar */
+#centerskillbar {
+    position: relative;
+    width: 840px;
+    height: 117px;
+    padding-right: 38px;
+    padding-top: 43px;
+}
+
+#swap{
+    display: inline-block;
+    margin-right: 2px;
+    margin-bottom: 25px;
+    width: 25px;
+    height: 40px;
+    background: #000000 
+    cursor: pointer;
+}
+
+.skill {
+    display: inline-block;
+    width: 65px;
+    height: 65px;
+    -webkit-transition: -webkit-transform .25s;
+    -moz-transition: -moz-transform .25s;
+    -ms-transition: -ms-transform .25s;
+    -o-transition: -o-transform .25s;
+    transition: transform .25s;
+    cursor: pointer;
+}
+
+#health {
+    display: inline-block;
+    vertical-align: bottom;
+    background: -webkit-linear-gradient(#ce2004, #440705); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#ce2004, #440705); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#ce2004, #440705); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#ce2004, #440705); /* Standard syntax */
+    width: 100px;
+    height: 100px;
+    -moz-border-radius: 55px;
+    border-radius: 55px;
+    border: #000000 solid 1px;
+    cursor: pointer;
+}
+
+/* The text in the center of the health */
+#healthtext{
+    text-align: center;
+    color: #ffffff;
+    width: 110px;
+    height: 20px;
+    margin-top: 45px;
+}
+
+#skill1{
+    background: #000000 url('http://gw2mb.com/image/skill1.png') no-repeat -10px -10px;
+}
+
+#skill2{
+    background: #000000 url('http://gw2mb.com/image/skill2.png') no-repeat -10px -10px;
+}
+
+#skill3{
+    background: #000000 url('http://gw2mb.com/image/skill3.png') no-repeat -10px -10px;
+}
+
+#skill4{
+    background: #000000 url('http://gw2mb.com/image/skill4.png') no-repeat -10px -10px;
+}
+
+#skill5{
+    background: #000000 url('http://gw2mb.com/image/skill5.png') no-repeat -10px -10px;
+}
+
+#skill6{
+    background: #000000 url('http://gw2mb.com/image/skill6.png') no-repeat -10px -10px;
+}
+
+#skill7{
+    background: #000000 url('http://gw2mb.com/image/skill7.png') no-repeat -10px -10px;
+}
+
+#skill8{
+    background: #000000 url('http://gw2mb.com/image/skill8.png') no-repeat -10px -10px;
+}
+
+#skill9{
+    background: #000000 url('http://gw2mb.com/image/octave_down.png') no-repeat -10px -10px;
+}
+
+#skill9_flute{
+    background: #000000 url('http://gw2mb.com/image/lock.png') no-repeat -10px -10px;
+}
+
+#skill0{
+    background: #000000 url('http://gw2mb.com/image/octave_up.png') no-repeat -10px -10px;
+}
+
+/* The small circles at the base of each skill */
+.key_label{
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    padding-top: 3px;
+    width: 19px;
+    height: 16px;
+    background-color: rgba(0,0,0,0.6);
+    color: #ffffff;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: small;
+}
+
+#key_1 {
+    left: 71px;
+}
+
+#key_2 {
+    left: 136px;
+}
+
+#key_3 {
+    left: 201px;
+}
+
+#key_4 {
+    left: 266px;
+}
+
+#key_5 {
+    left: 331px;
+}
+
+#key_6 {
+    left: 500px;
+}
+
+#key_7 {
+    left: 565px;
+}
+
+#key_8 {
+    left: 630px;
+}
+
+#key_9 {
+    left: 695px;
+}
+
+#key_0 {
+    left: 760px;
+}
+
+/* The main text area that contains the notes of the song */
+#songarea{
+     position: absolute;
+  width: 80%;
+  height: 200px;
+  z-index: 15;
+  top: 700%;
+  left: 9%;
+}

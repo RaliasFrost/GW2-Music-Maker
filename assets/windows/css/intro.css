@@ -1,0 +1,152 @@
+body {
+    background-color: #2C2F33;
+    color: white;
+}
+a {
+    color: #7289DA;
+}
+
+/*Music Bar CSS*/
+.title {
+    color: #FFFFFF;
+    text-align: left;
+    padding-left: 10px;
+}
+.info {
+    color: #858585;
+    text-align: left;
+        padding-left: 10px;
+
+}
+#time {
+    float: right;
+    padding-right: 10px;
+}
+#art {
+    height: 60px;
+    width: 60px;
+    float: left;
+}
+#musicbar {
+    background: #36393E;
+    height: 60px;
+    position: fixed;
+    top: 40px;
+    right: 0px;
+    width: 100%;
+    clear: both;
+}
+.spacer {
+    width: 100%;
+    height: 60px;
+}
+
+/*Progress Bar CSS*/
+
+progress {
+    border: 0;
+    height: 7px;
+    width: 92%;
+    padding-left: 10px;
+    border-radius: 5px;
+    clear: left;
+}
+progress::-webkit-progress-value {
+    background-color: #F44B22;
+    border-radius: 50px;
+    background-size: 30px 30px;
+}
+progress::-webkit-progress-bar {
+    background: gray;
+    border-radius: 50px;
+    padding: 2px;
+    padding: 0px;
+}
+
+/* Scroll bar CSS */
+::-webkit-scrollbar {
+    width: 5px;
+}
+/* Track */
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+/* Handle */
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(244, 75, 34, 0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(255, 0, 0, 0.4);
+}
+/* Navigation Bar */
+#topBar {
+    position: fixed;
+    -webkit-app-region: drag;
+    background-color: #23272A;
+    width: 100%;
+    top: 0px;
+    clear: both;
+    right: 0px;
+    height: 40px;
+}
+
+#buttons {
+    position: absolute;
+    -webkit-app-region: no-drag;
+    top: 0px;
+    right: 0px;
+    background-color: #2A2F33;
+    padding: 10px;
+}
+#buttons #u {
+    -webkit-app-region: no-drag;
+    padding-right: 20px;
+    
+}
+a:link {
+    filter: grayscale();
+}
+a:hover {
+    filter: none;
+}
+
+a {
+    -webkit-app-region: no-drag;
+}
+
+/* Main Body */
+#main {
+    padding: 20px;
+    padding-top: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+html {
+    overflow: auto;
+}
+
+textarea {
+    width: 70%;
+    height: 120px;
+    border: none;
+        padding: 5px;
+    resize: none;
+    color: white;
+    background-color: #23272A;
+    font-family: Tahoma, sans-serif;
+    background-position: bottom right;
+    background-repeat: no-repeat;
+    box-shadow: 3px 3px 3px #2A2D2F inset;
+}
+
+textarea:focus {
+   outline: none;
+}
