@@ -99,7 +99,7 @@ a.navicon:hover {
     padding-top: 43px;
 }
 
-#swap{
+#swap{51
     display: inline-block;
     margin-right: 2px;
     margin-bottom: 25px;
@@ -193,7 +193,6 @@ a.navicon:hover {
 .key_label{
     display: block;
     position: absolute;
-    bottom: 20px;
     padding-top: 3px;
     width: 19px;
     height: 16px;
@@ -206,43 +205,75 @@ a.navicon:hover {
 }
 
 #key_1 {
-    left: 71px;
+    left: 045px;
+    top: 188px;
 }
 
 #key_2 {
-    left: 136px;
+    left: 110px;
+    top: 188px;
 }
 
 #key_3 {
-    left: 201px;
+    left: 175px;
+    top: 188px;
 }
 
 #key_4 {
-    left: 266px;
+    left: 240px;
+    top: 188px;
 }
 
 #key_5 {
-    left: 331px;
+    left: 305px;
+    top: 188px;
 }
 
 #key_6 {
-    left: 500px;
+    left: 474px;
+    top: 188px;
 }
 
 #key_7 {
-    left: 565px;
+    left: 539px;
+    top: 188px;
 }
 
 #key_8 {
-    left: 630px;
+    left: 604px;
+    top: 188px;
 }
 
 #key_9 {
-    left: 695px;
+    left: 669px;
+    top: 188px;
 }
 
 #key_0 {
-    left: 760px;
+    left: 734px;
+    top: 188px;
+}
+
+#key_f1 {
+    top: 50px;
+}
+#key_f2 {
+    top: 50px;
+}
+#key_f3 {
+    top: 50px;
+}
+#key_f4 {
+    top: 50px;
+}
+#key_f5 {
+    top: 50px;
+}
+#key_f6 {
+    top: 50px;
+}
+#key_f7 {
+    top: 50px;
 }
 
 /* The main text area that contains the notes of the song */

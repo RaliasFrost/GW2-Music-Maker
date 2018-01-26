@@ -1,61 +1,84 @@
 /******************************************************************************/
-/* Global Variables                                                           */
+/* Global letiables                                                           */
 /******************************************************************************/
 
 // the current octave of the instrument
-var currentOctave = 1;
-var note = 'Hi';
+let currentOctave = 1;
+let note = 'Hi';
 // this holds the currently playing audio file. this is necessary for fadeing
 // notes out
-var currentAudio = new Audio();
+let currentAudio = new Audio();
 // used to stop playback
-var stopPlayback = false;
+let stopPlayback = false;
 // used to show that a song is currently playing back
-var nowPlaying = false;
+let nowPlaying = false;
 // the song id of the currently playing song. used to stop playback for the
 // current song on the archive page
-var nowPlayingID = 0;
+let nowPlayingID = 0;
 // used to remember which song to add a comment to
-var commentSongID = 0;
+let commentSongID = 0;
 // recording (1) or not recording (0)
-var combatMode = 1;
+let combatMode = 1;
 // chord mode off (0) chord mode on (1)
-var chordMode = 0;
+let chordMode = 0;
 // the notes in the current chord
-var chordArray = [];
+let chordArray = [];
 // the tempo, meter, and volume of the current song
-var global_tempo = 90;
-var global_meter = 4;
-var global_volume = 50;
+let global_tempo = 90;
+let global_meter = 4;
+let global_volume = 50;
 // numerator and denominator of the note length multiplier
-var numerator = 1;
-var denominator = 1;
+let numerator = 1;
+let denominator = 1;
 // hotkeys off = false hotkeys on = true
-var hotkeys = true;
+let hotkeys = true;
 // properties to test for shadow
-var shadowprop = getsupportedprop(['boxShadow',
+let shadowprop = getsupportedprop(['boxShadow',
     'mozBoxShadow',
     'webkitBoxShadow'
 ]);
 // properties to test for transforming
-var transformprop = getsupportedprop(['webkitTransform',
+let transformprop = getsupportedprop(['webkitTransform',
     'mozTransform',
     'msTransform',
     'oTransform',
     'transform'
 ]);
 // this is the shadow property used when a key is pressed
-var shadowvalue = '0 0 15px 10px #000000 inset';
+let shadowvalue = '0 0 15px 10px #000000 inset';
 // these are the rotate values for when changing octaves
-var transformvalue1 = 'rotateX(90deg)';
-var transformvalue2 = 'rotateX(0deg)';
-// this global variable is used to stop double posts when the add comment button
+let transformvalue1 = 'rotateX(90deg)';
+let transformvalue2 = 'rotateX(0deg)';
+// this global letiable is used to stop double posts when the add comment button
 // is clicked twice
-var addCommentClicked = false;
+let addCommentClicked = false;
+
+let instrument = null;
+
 
 /******************************************************************************/
 /* Functions                                                                  */
 /******************************************************************************/
+
+let getUrlParameter = function getUrlParameter(sParam) {
+    let sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLletiables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLletiables.length; i++) {
+        sParameterName = sURLletiables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+instrument = getUrlParameter('instrument');
+console.log("instrument: " + instrument);
+if (!instrument) window.location.replace('./intro.html?instrument=harp');
+
 
 // fade in the black overlay and the given lightbox
 function overlay(lightbox_id) {
@@ -106,8 +129,8 @@ Array.prototype.pushIfNotExist = function(element) {
     if (jQuery.inArray(element, this) == -1) {
         this.push(element);
         this.sort(function(a, b) {
-            var keyA = getKeyOctaveFromPitch(a, 0, location.pathname);
-            var keyB = getKeyOctaveFromPitch(b, 0, location.pathname);
+            let keyA = getKeyOctaveFromPitch(a, 0, location.pathname);
+            let keyB = getKeyOctaveFromPitch(b, 0, location.pathname);
             // compare octaves first
             if (keyA[1] > keyB[1]) {
                 return 1;
@@ -130,7 +153,7 @@ Array.prototype.pushIfNotExist = function(element) {
 
 // remove the given element from the array
 Array.prototype.removeValue = function(element) {
-    var index = this.indexOf(element);
+    let index = this.indexOf(element);
     if (index > -1) {
         this.splice(index, 1);
     }
@@ -138,7 +161,7 @@ Array.prototype.removeValue = function(element) {
 
 // Reduce a fraction by finding the Greatest Common Divisor and dividing by it.
 function reduce(num, den) {
-    var gcd = function gcd(a, b) {
+    let gcd = function gcd(a, b) {
         return b ? gcd(b, a % b) : a;
     };
     gcd = gcd(num, den);
@@ -152,13 +175,13 @@ function stripchars(string, chars) {
 
 //return the supported format as a file extension string
 function audioSupport() {
-    var a = document.createElement('audio');
-    var ogg = !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+    let a = document.createElement('audio');
+    let ogg = !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
     if (ogg)
-        return '.ogg';
-    var mp3 = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+        return '';
+    let mp3 = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
     if (mp3)
-        return '.mp3';
+        return '';
     else
         return 0;
 }
@@ -167,7 +190,7 @@ function audioSupport() {
 function get_comments(song_id) {
     $.ajax({
         type: "POST",
-        url: "sql/get_comments.php",
+        url: "sql/get_comments",
         data: "song_id=" + song_id,
         success: function(html) {
             $("#comments_area").html(html);
@@ -188,8 +211,8 @@ function htmlentities(rawStr) {
 
 // return the property from the given array that works in the current browser
 function getsupportedprop(proparray) {
-    var root = document.documentElement; //reference root element of document
-    for (var i = 0; i < proparray.length; i++) { //loop through possible properties
+    let root = document.documentElement; //reference root element of document
+    for (let i = 0; i < proparray.length; i++) { //loop through possible properties
         if (proparray[i] in root.style) { //if property exists on element (value will be string, empty string if not set)
             return proparray[i]; //return that string
         }
@@ -205,7 +228,7 @@ function changecssproperty(target, prop, value, action) {
 
 // opens the window in a new tab
 function openInNewTab(url) {
-    var win = window.open(url, '_blank');
+    let win = window.open(url, '_blank');
     win.focus();
 }
 
@@ -247,521 +270,44 @@ function fadeoutAudio(tempAudio) {
 
 // get the sound file URL based on the octave, instrument, and skill id
 function getSoundFileFromSkillId(skill_id) {
-    var return_soundfile;
-    if (currentOctave == 0) {
-        /*if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D4";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bell/E4";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bell/F4";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bell/G4";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bell/A4";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bell/B4";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bell/C5";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D5";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            //there is no bottom octave for flute
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E3";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/horn/F3";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/horn/G3";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/horn/A3";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/horn/B3";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/horn/C4";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/horn/D4";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E4";
-                    break;
-            }
-        } else {*/
-        switch (skill_id) {
-            case "skill1":
-                return_soundfile = "http://gw2mb.com/sound/harp/C3";
-                break;
-            case "skill2":
-                return_soundfile = "http://gw2mb.com/sound/harp/D3";
-                break;
-            case "skill3":
-                return_soundfile = "http://gw2mb.com/sound/harp/E3";
-                break;
-            case "skill4":
-                return_soundfile = "http://gw2mb.com/sound/harp/F3";
-                break;
-            case "skill5":
-                return_soundfile = "http://gw2mb.com/sound/harp/G3";
-                break;
-            case "skill6":
-                return_soundfile = "http://gw2mb.com/sound/harp/A3";
-                break;
-            case "skill7":
-                return_soundfile = "http://gw2mb.com/sound/harp/B3";
-                break;
-            case "skill8":
-                return_soundfile = "http://gw2mb.com/sound/harp/C4";
-                break;
-        }
-        /*}
-        if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C3";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/lute/D3";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/lute/E3";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/lute/F3";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/lute/G3";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/lute/A3";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/lute/B3";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C4";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            //there is no bottom octave for bell2
-        } else if (location.pathname == "/bass.php") {
-            //there is no bottom octave for bass
-        }*/
-    } else if (currentOctave == 1) {
-        /*if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D5";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bell/E5";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bell/F5";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bell/G5";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bell/A5";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bell/B5";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bell/C6";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D6";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/flute/E4";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/flute/F4";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/flute/G4";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/flute/A4";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/flute/B4";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/flute/C5";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/flute/D5";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/flute/E5";
-                    break;
-            }
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E4";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/horn/F4";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/horn/G4";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/horn/A4";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/horn/B4";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/horn/C5";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/horn/D5";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E5";
-                    break;
-            }
-        } else if (location.pathname == "/harp.php") {*/
-        switch (skill_id) {
-            case "skill1":
-                return_soundfile = "http://gw2mb.com/sound/harp/C4";
-                break;
-            case "skill2":
-                return_soundfile = "http://gw2mb.com/sound/harp/D4";
-                break;
-            case "skill3":
-                return_soundfile = "http://gw2mb.com/sound/harp/E4";
-                break;
-            case "skill4":
-                return_soundfile = "http://gw2mb.com/sound/harp/F4";
-                break;
-            case "skill5":
-                return_soundfile = "http://gw2mb.com/sound/harp/G4";
-                break;
-            case "skill6":
-                return_soundfile = "http://gw2mb.com/sound/harp/A4";
-                break;
-            case "skill7":
-                return_soundfile = "http://gw2mb.com/sound/harp/B4";
-                break;
-            case "skill8":
-                return_soundfile = "http://gw2mb.com/sound/harp/C5";
-                break;
-        }
-        /*} else if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C4";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/lute/D4";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/lute/E4";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/lute/F4";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/lute/G4";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/lute/A4";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/lute/B4";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C5";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/C5";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/D5";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/E5";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/F5";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/G5";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/A5";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/B5";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/C6";
-                    break;
-            }
-        } else if (location.pathname == "/bass.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bass/C1";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bass/D1";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bass/E1";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bass/F1";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bass/G1";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bass/A1";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bass/B1";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bass/C2";
-                    break;
-            }
-        }*/
-    } else if (currentOctave == 2) {
-        /*if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D6";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bell/E6";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bell/F6";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bell/G6";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bell/A6";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bell/B6";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bell/C7";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bell/D7";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/flute/E5";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/flute/F5";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/flute/G5";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/flute/A5";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/flute/B5";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/flute/C6";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/flute/D6";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/flute/E6";
-                    break;
-            }
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E5";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/horn/F5";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/horn/G5";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/horn/A5";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/horn/B5";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/horn/C6";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/horn/D6";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/horn/E6";
-                    break;
-            }
-        } else if (location.pathname == "/harp.php") {*/
-        switch (skill_id) {
-            case "skill1":
-                return_soundfile = "http://gw2mb.com/sound/harp/C5";
-                break;
-            case "skill2":
-                return_soundfile = "http://gw2mb.com/sound/harp/D5";
-                break;
-            case "skill3":
-                return_soundfile = "http://gw2mb.com/sound/harp/E5";
-                break;
-            case "skill4":
-                return_soundfile = "http://gw2mb.com/sound/harp/F5";
-                break;
-            case "skill5":
-                return_soundfile = "http://gw2mb.com/sound/harp/G5";
-                break;
-            case "skill6":
-                return_soundfile = "http://gw2mb.com/sound/harp/A5";
-                break;
-            case "skill7":
-                return_soundfile = "http://gw2mb.com/sound/harp/B5";
-                break;
-            case "skill8":
-                return_soundfile = "http://gw2mb.com/sound/harp/C6";
-                break;
-        }
-        /*} else if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C5";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/lute/D5";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/lute/E5";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/lute/F5";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/lute/G5";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/lute/A5";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/lute/B5";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/lute/C6";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/C6";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/D6";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/E6";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/F6";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/G6";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/A6";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/B6";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bell2/C7";
-                    break;
-            }
-        } else if (location.pathname == "/bass.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_soundfile = "http://gw2mb.com/sound/bass/C2";
-                    break;
-                case "skill2":
-                    return_soundfile = "http://gw2mb.com/sound/bass/D2";
-                    break;
-                case "skill3":
-                    return_soundfile = "http://gw2mb.com/sound/bass/E2";
-                    break;
-                case "skill4":
-                    return_soundfile = "http://gw2mb.com/sound/bass/F2";
-                    break;
-                case "skill5":
-                    return_soundfile = "http://gw2mb.com/sound/bass/G2";
-                    break;
-                case "skill6":
-                    return_soundfile = "http://gw2mb.com/sound/bass/A2";
-                    break;
-                case "skill7":
-                    return_soundfile = "http://gw2mb.com/sound/bass/B2";
-                    break;
-                case "skill8":
-                    return_soundfile = "http://gw2mb.com/sound/bass/C3";
-                    break;
-            }
-        }*/
+    let return_soundfile;
+    switch (skill_id) {
+        case `skill1`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/1.mp3`;
+            break;
+        case `skill2`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/2.mp3`;
+            break;
+        case `skill3`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/3.mp3`;
+            break;
+        case `skill4`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/4.mp3`;
+            break;
+        case `skill5`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/5.mp3`;
+            break;
+        case `skill6`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/6.mp3`;
+            break;
+        case `skill7`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/7.mp3`;
+            break;
+        case `skill8`:
+            return_soundfile = `sound/${instrument}/${currentOctave}/8.mp3`;
+            break;
     }
-    //tack on the proper file extension
-    return_soundfile += audioSupport();
-
     return return_soundfile;
 }
 
 // get the sound file from the abc Pitch
 function getSoundFileFromPitch(pitch, instrument) {
-    var charArray = pitch.split('');
-    var link_base = "http://gw2mb.com/sound/";
-    var instrument_core = instrument.replace(".php", "").replace("/", "");
-    var letter = charArray[0].toUpperCase();
-    var octave;
-    var file_extension;
+    let charArray = pitch.split('');
+    let link_base = "http://gw2mb.com/sound/";
+    let instrument_core = instrument.replace("", "").replace("/", "");
+    let letter = charArray[0].toUpperCase();
+    let octave;
+    let file_extension;
 
     // find the octave in standard notation
     if (charArray[0] == charArray[0].toUpperCase()) {
@@ -796,8 +342,8 @@ function getSoundFileFromPitch(pitch, instrument) {
 // using the given meter, tempo, and noteLength. return the noteLength in ms
 function getDelayFromNoteLength(noteLength, meter, tempo) {
     charArray = noteLength.split('/');
-    var num;
-    var denom;
+    let num;
+    let denom;
 
     if (noteLength == "") {
         num = 1;
@@ -823,520 +369,14 @@ function getDelayFromNoteLength(noteLength, meter, tempo) {
     return (((((60 / tempo) * 4) / (16 / meter)) * 1000) * (num / denom)).toFixed();
 }
 
-// get the abc notation note string based on the octave, instrument, and
-// skill id
-function getABCNote(skill_id) {
-    var return_note;
-    if (currentOctave == 0) {
-        if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "D";
-                    break;
-                case "skill2":
-                    return_note = "E";
-                    break;
-                case "skill3":
-                    return_note = "F";
-                    break;
-                case "skill4":
-                    return_note = "G";
-                    break;
-                case "skill5":
-                    return_note = "A";
-                    break;
-                case "skill6":
-                    return_note = "B";
-                    break;
-                case "skill7":
-                    return_note = "c";
-                    break;
-                case "skill8":
-                    return_note = "d";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            //there is no bottom octave for flute
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "E,";
-                    break;
-                case "skill2":
-                    return_note = "F,";
-                    break;
-                case "skill3":
-                    return_note = "G,";
-                    break;
-                case "skill4":
-                    return_note = "A,";
-                    break;
-                case "skill5":
-                    return_note = "B,";
-                    break;
-                case "skill6":
-                    return_note = "C";
-                    break;
-                case "skill7":
-                    return_note = "D";
-                    break;
-                case "skill8":
-                    return_note = "E";
-                    break;
-            }
-        } else if (location.pathname == "/harp.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C,";
-                    break;
-                case "skill2":
-                    return_note = "D,";
-                    break;
-                case "skill3":
-                    return_note = "E,";
-                    break;
-                case "skill4":
-                    return_note = "F,";
-                    break;
-                case "skill5":
-                    return_note = "G,";
-                    break;
-                case "skill6":
-                    return_note = "A,";
-                    break;
-                case "skill7":
-                    return_note = "B,";
-                    break;
-                case "skill8":
-                    return_note = "C";
-                    break;
-            }
-        } else if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C,";
-                    break;
-                case "skill2":
-                    return_note = "D,";
-                    break;
-                case "skill3":
-                    return_note = "E,";
-                    break;
-                case "skill4":
-                    return_note = "F,";
-                    break;
-                case "skill5":
-                    return_note = "G,";
-                    break;
-                case "skill6":
-                    return_note = "A,";
-                    break;
-                case "skill7":
-                    return_note = "B,";
-                    break;
-                case "skill8":
-                    return_note = "C";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            //there is no bottom octave for bell2
-        } else if (location.pathname == "/bass.php") {
-            //there is no bottom octave for bass
-        }
-    } else if (currentOctave == 1) {
-        if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "d";
-                    break;
-                case "skill2":
-                    return_note = "e";
-                    break;
-                case "skill3":
-                    return_note = "f";
-                    break;
-                case "skill4":
-                    return_note = "g";
-                    break;
-                case "skill5":
-                    return_note = "a";
-                    break;
-                case "skill6":
-                    return_note = "b";
-                    break;
-                case "skill7":
-                    return_note = "c'";
-                    break;
-                case "skill8":
-                    return_note = "d'";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "E";
-                    break;
-                case "skill2":
-                    return_note = "F";
-                    break;
-                case "skill3":
-                    return_note = "G";
-                    break;
-                case "skill4":
-                    return_note = "A";
-                    break;
-                case "skill5":
-                    return_note = "B";
-                    break;
-                case "skill6":
-                    return_note = "c";
-                    break;
-                case "skill7":
-                    return_note = "d";
-                    break;
-                case "skill8":
-                    return_note = "e";
-                    break;
-            }
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "E";
-                    break;
-                case "skill2":
-                    return_note = "F";
-                    break;
-                case "skill3":
-                    return_note = "G";
-                    break;
-                case "skill4":
-                    return_note = "A";
-                    break;
-                case "skill5":
-                    return_note = "B";
-                    break;
-                case "skill6":
-                    return_note = "c";
-                    break;
-                case "skill7":
-                    return_note = "d";
-                    break;
-                case "skill8":
-                    return_note = "e";
-                    break;
-            }
-        } else if (location.pathname == "/harp.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C";
-                    break;
-                case "skill2":
-                    return_note = "D";
-                    break;
-                case "skill3":
-                    return_note = "E";
-                    break;
-                case "skill4":
-                    return_note = "F";
-                    break;
-                case "skill5":
-                    return_note = "G";
-                    break;
-                case "skill6":
-                    return_note = "A";
-                    break;
-                case "skill7":
-                    return_note = "B";
-                    break;
-                case "skill8":
-                    return_note = "c";
-                    break;
-            }
-        } else if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C";
-                    break;
-                case "skill2":
-                    return_note = "D";
-                    break;
-                case "skill3":
-                    return_note = "E";
-                    break;
-                case "skill4":
-                    return_note = "F";
-                    break;
-                case "skill5":
-                    return_note = "G";
-                    break;
-                case "skill6":
-                    return_note = "A";
-                    break;
-                case "skill7":
-                    return_note = "B";
-                    break;
-                case "skill8":
-                    return_note = "c";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "c";
-                    break;
-                case "skill2":
-                    return_note = "d";
-                    break;
-                case "skill3":
-                    return_note = "e";
-                    break;
-                case "skill4":
-                    return_note = "f";
-                    break;
-                case "skill5":
-                    return_note = "g";
-                    break;
-                case "skill6":
-                    return_note = "a";
-                    break;
-                case "skill7":
-                    return_note = "b";
-                    break;
-                case "skill8":
-                    return_note = "c'";
-                    break;
-            }
-        } else if (location.pathname == "/bass.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C,,,";
-                    break;
-                case "skill2":
-                    return_note = "D,,,";
-                    break;
-                case "skill3":
-                    return_note = "E,,,";
-                    break;
-                case "skill4":
-                    return_note = "F,,,";
-                    break;
-                case "skill5":
-                    return_note = "G,,,";
-                    break;
-                case "skill6":
-                    return_note = "A,,,";
-                    break;
-                case "skill7":
-                    return_note = "B,,,";
-                    break;
-                case "skill8":
-                    return_note = "C,,";
-                    break;
-            }
-        }
-    } else if (currentOctave == 2) {
-        if (location.pathname == "/bell.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "d'";
-                    break;
-                case "skill2":
-                    return_note = "e'";
-                    break;
-                case "skill3":
-                    return_note = "f'";
-                    break;
-                case "skill4":
-                    return_note = "g'";
-                    break;
-                case "skill5":
-                    return_note = "a'";
-                    break;
-                case "skill6":
-                    return_note = "b'";
-                    break;
-                case "skill7":
-                    return_note = "c''";
-                    break;
-                case "skill8":
-                    return_note = "d''";
-                    break;
-            }
-        } else if (location.pathname == "/flute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "e";
-                    break;
-                case "skill2":
-                    return_note = "f";
-                    break;
-                case "skill3":
-                    return_note = "g";
-                    break;
-                case "skill4":
-                    return_note = "a";
-                    break;
-                case "skill5":
-                    return_note = "b";
-                    break;
-                case "skill6":
-                    return_note = "c'";
-                    break;
-                case "skill7":
-                    return_note = "d'";
-                    break;
-                case "skill8":
-                    return_note = "e'";
-                    break;
-            }
-        } else if (location.pathname == "/horn.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "e";
-                    break;
-                case "skill2":
-                    return_note = "f";
-                    break;
-                case "skill3":
-                    return_note = "g";
-                    break;
-                case "skill4":
-                    return_note = "a";
-                    break;
-                case "skill5":
-                    return_note = "b";
-                    break;
-                case "skill6":
-                    return_note = "c'";
-                    break;
-                case "skill7":
-                    return_note = "d'";
-                    break;
-                case "skill8":
-                    return_note = "e'";
-                    break;
-            }
-        } else if (location.pathname == "/harp.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "c";
-                    break;
-                case "skill2":
-                    return_note = "d";
-                    break;
-                case "skill3":
-                    return_note = "e";
-                    break;
-                case "skill4":
-                    return_note = "f";
-                    break;
-                case "skill5":
-                    return_note = "g";
-                    break;
-                case "skill6":
-                    return_note = "a";
-                    break;
-                case "skill7":
-                    return_note = "b";
-                    break;
-                case "skill8":
-                    return_note = "c'";
-                    break;
-            }
-        } else if (location.pathname == "/lute.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "c";
-                    break;
-                case "skill2":
-                    return_note = "d";
-                    break;
-                case "skill3":
-                    return_note = "e";
-                    break;
-                case "skill4":
-                    return_note = "f";
-                    break;
-                case "skill5":
-                    return_note = "g";
-                    break;
-                case "skill6":
-                    return_note = "a";
-                    break;
-                case "skill7":
-                    return_note = "b";
-                    break;
-                case "skill8":
-                    return_note = "c'";
-                    break;
-            }
-        } else if (location.pathname == "/bell2.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "c'";
-                    break;
-                case "skill2":
-                    return_note = "d'";
-                    break;
-                case "skill3":
-                    return_note = "e'";
-                    break;
-                case "skill4":
-                    return_note = "f'";
-                    break;
-                case "skill5":
-                    return_note = "g'";
-                    break;
-                case "skill6":
-                    return_note = "a'";
-                    break;
-                case "skill7":
-                    return_note = "b'";
-                    break;
-                case "skill8":
-                    return_note = "c''";
-                    break;
-            }
-        } else if (location.pathname == "/bass.php") {
-            switch (skill_id) {
-                case "skill1":
-                    return_note = "C,,";
-                    break;
-                case "skill2":
-                    return_note = "D,,";
-                    break;
-                case "skill3":
-                    return_note = "E,,";
-                    break;
-                case "skill4":
-                    return_note = "F,,";
-                    break;
-                case "skill5":
-                    return_note = "G,,";
-                    break;
-                case "skill6":
-                    return_note = "A,,";
-                    break;
-                case "skill7":
-                    return_note = "B,,";
-                    break;
-                case "skill8":
-                    return_note = "C,";
-                    break;
-            }
-        }
-    }
-    return return_note;
-}
-
 // verify that the pitch portion of the ABC note has valid syntax
 function checkPitchSyntax(pitch) {
 
-    var charArray = pitch.split('');
+    let charArray = pitch.split('');
 
     // if the note is lower case make sure the rest of the string is single quotes
     if (/^[a-gz]$/.test(charArray[0])) {
-        for (var i = 1; i < charArray.length; i++) {
+        for (let i = 1; i < charArray.length; i++) {
             if (charArray[i] != "'") {
                 return false;
             }
@@ -1344,7 +384,7 @@ function checkPitchSyntax(pitch) {
     }
     // if the note is upper case make sure the rest of the string is commas
     else if (/^[A-GZ]$/.test(charArray[0])) {
-        for (var i = 1; i < charArray.length; i++) {
+        for (let i = 1; i < charArray.length; i++) {
             if (charArray[i] != ",") {
                 return false;
             }
@@ -1363,16 +403,16 @@ function checkPitchSyntax(pitch) {
 
 // returns the sound file and note length in milliseconds
 function parseABCNote(note, instrument, meter, tempo) {
-    var return_array = new Array();
+    let return_array = new Array();
 
     // if there is no note return an error
     if (note == "")
         return "";
 
-    var pitch = stripchars(note, "/1234567890");
-    var noteLength = stripchars(note, "abcdefgzABCDEFGZ\\[\\],'");
+    let pitch = stripchars(note, "/1234567890");
+    let noteLength = stripchars(note, "abcdefgzABCDEFGZ\\[\\],'");
 
-    var charArray = pitch.split('');
+    let charArray = pitch.split('');
 
     // if the pitch is a chord
     if (charArray[0] == '[') {
@@ -1381,10 +421,10 @@ function parseABCNote(note, instrument, meter, tempo) {
             return "";
         }
 
-        var pitchArray = new Array();
-        var pitchIndex = -1;
+        let pitchArray = new Array();
+        let pitchIndex = -1;
         //populate the pitch array
-        for (var i = 1; i < charArray.length - 1; i++) {
+        for (let i = 1; i < charArray.length - 1; i++) {
             if (/^[a-gA-G]$/.test(charArray[i])) {
                 pitchIndex++;
                 pitchArray[pitchIndex] = charArray[i];
@@ -1394,7 +434,7 @@ function parseABCNote(note, instrument, meter, tempo) {
         }
 
         // remove duplicate values from array
-        var uniquePitchArray = [];
+        let uniquePitchArray = [];
         $.each(pitchArray, function(i, el) {
             if ($.inArray(el, uniquePitchArray) === -1)
                 uniquePitchArray.push(el);
@@ -1404,7 +444,7 @@ function parseABCNote(note, instrument, meter, tempo) {
         pitchArray = uniquePitchArray.slice();
 
         return_array[0] = new Array();
-        for (var i = 0; i < pitchArray.length; i++) {
+        for (let i = 0; i < pitchArray.length; i++) {
             // check to make sure each note is well formed
             if (checkPitchSyntax(pitchArray[i]) == false) {
                 return "";
@@ -1430,10 +470,10 @@ function parseABCNote(note, instrument, meter, tempo) {
 
 // make sure the playback and export work
 function checkSyntax(songtext, instrument) {
-    var notes = songtext.trim().split(/\s+/);
+    let notes = songtext.trim().split(/\s+/);
 
     // check each note for playback compatibility
-    for (var i = 0; i < notes.length; i++) {
+    for (let i = 0; i < notes.length; i++) {
         if (parseABCNote(notes[i], instrument, global_meter, global_tempo) == "") {
             if (typeof console != "undefined") {
                 console.log(notes[i]);
@@ -1455,15 +495,13 @@ function checkSyntax(songtext, instrument) {
 
 // this function is called when a skill button is pressed
 function skill(skill_id) {
-    var return_string;
+    let return_string;
     // reduce the numerator and denominator (ex. 6/4 => 3/2) and store the
     // result in num_den array
-    var num_den = reduce(numerator, denominator);
+    let num_den = reduce(numerator, denominator);
 
     //stop audio if flute or horn before beginning a new note
-    if (location.pathname == "/flute.php" || location.pathname == "/horn.php" || location.pathname == "/bass.php") {
-        fadeoutAudio(currentAudio);
-    }
+
 
     // select the note and instrument to play and prepare the audio for playback
     currentAudio = new Audio(getSoundFileFromSkillId(skill_id));
@@ -1478,7 +516,7 @@ function skill(skill_id) {
     // if chord mode is not enabled, play the note
     if (chordMode == 0) {
         // play the note
-        if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+        if (instrument == "flute" || instrument == "horn") {
             currentAudio.volume = 0;
             currentAudio.play();
             $(currentAudio).animate({
@@ -1494,12 +532,12 @@ function skill(skill_id) {
             chordArray.pushIfNotExist(note);
             return_string = "";
             // create the chord array for display above the chord mode button
-            for (var i = 0; i < chordArray.length; i++) {
+            for (let i = 0; i < chordArray.length; i++) {
                 return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
             }
             $("#currentNotesInChord").html(return_string);
             // play the note
-            if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+            if (instrument == "flute" || instrument == "horn") {
                 currentAudio.volume = 0;
                 currentAudio.play();
                 $(currentAudio).animate({
@@ -1515,7 +553,7 @@ function skill(skill_id) {
             chordArray.removeValue(note);
             return_string = "";
             // create the chord array for display above the chord mode button
-            for (var i = 0; i < chordArray.length; i++) {
+            for (let i = 0; i < chordArray.length; i++) {
                 return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
             }
             $("#currentNotesInChord").html(return_string);
@@ -1535,10 +573,9 @@ function skill(skill_id) {
 
     // if combatMode is enabled and chordMode is not, write the note to the
     // songarea
-    if (combatMode == 1 && chordMode == 0) {
-        Idontknowwhyhavingthishereworksbutitjustdoes
-    }
+    throw "Musical Note";
 }
+
 
 // add slashes when the str includes single quotes
 function addslashes(str) {
@@ -1548,8 +585,8 @@ function addslashes(str) {
 // remove the given note from the chord array and reprint the chord array
 function removeChordArrayMember(note) {
     chordArray.removeValue(note);
-    var return_string = "";
-    for (var i = 0; i < chordArray.length; i++) {
+    let return_string = "";
+    for (let i = 0; i < chordArray.length; i++) {
         return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
     }
     $("#currentNotesInChord").html(return_string);
@@ -1557,20 +594,20 @@ function removeChordArrayMember(note) {
 
 // this function is invoked when the ocrave down button is pressed
 function octave_down() {
-    if (location.pathname == "/flute.php" || location.pathname == "/bell2.php" || location.pathname == "/bass.php") {
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
         if (currentOctave == 2) {
             currentOctave = 1;
-            changecssproperty(document.getElementById("skill9_flute"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill0").style.backgroundImage = "url('image/octave_up.png')";
                 document.getElementById("skill0").style.cursor = "pointer";
-                document.getElementById("skill9_flute").style.backgroundImage = "url('image/lock.png')";
-                document.getElementById("skill9_flute").style.cursor = "default";
-                for (var i = 0; i < all.length; i++) {
+                document.getElementById("skill9").style.backgroundImage = "url('image/lock.png')";
+                document.getElementById("skill9").style.cursor = "default";
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
@@ -1579,28 +616,28 @@ function octave_down() {
         if (currentOctave == 1) {
             currentOctave = 0;
             changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill9").style.backgroundImage = "url('image/lock.png')";
                 document.getElementById("skill9").style.cursor = "default";
-                for (var i = 0; i < all.length; i++) {
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
         } else if (currentOctave == 2) {
             currentOctave = 1;
             changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill0").style.backgroundImage = "url('image/octave_up.png')";
                 document.getElementById("skill0").style.cursor = "pointer";
-                for (var i = 0; i < all.length; i++) {
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
@@ -1608,22 +645,24 @@ function octave_down() {
     }
 }
 
+
+
 // this function is invoked when the ocrave up button is pressed
 function octave_up() {
-    if (location.pathname == "/flute.php" || location.pathname == "/bell2.php" || location.pathname == "/bass.php") {
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
         if (currentOctave == 1) {
             currentOctave = 2;
             changecssproperty(document.getElementById("skill0"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill0").style.backgroundImage = "url('image/lock.png')";
                 document.getElementById("skill0").style.cursor = "default";
-                document.getElementById("skill9_flute").style.backgroundImage = "url('image/octave_down.png')";
-                document.getElementById("skill9_flute").style.cursor = "pointer";
-                for (var i = 0; i < all.length; i++) {
+                document.getElementById("skill9").style.backgroundImage = "url('image/octave_down.png')";
+                document.getElementById("skill9").style.cursor = "pointer";
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
@@ -1632,28 +671,28 @@ function octave_up() {
         if (currentOctave == 0) {
             currentOctave = 1;
             changecssproperty(document.getElementById("skill0"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill9").style.backgroundImage = "url('image/octave_down.png')";
                 document.getElementById("skill9").style.cursor = "pointer";
-                for (var i = 0; i < all.length; i++) {
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
         } else if (currentOctave == 1) {
             currentOctave = 2;
             changecssproperty(document.getElementById("skill0"), shadowprop, shadowvalue);
-            var all = document.getElementsByClassName('skill');
-            for (var i = 0; i < all.length; i++) {
+            let all = document.getElementsByClassName('skill');
+            for (let i = 0; i < all.length; i++) {
                 changecssproperty(all[i], transformprop, transformvalue1);
             }
             setTimeout(function() {
                 document.getElementById("skill0").style.backgroundImage = "url('image/lock.png')";
                 document.getElementById("skill0").style.cursor = "default";
-                for (var i = 0; i < all.length; i++) {
+                for (let i = 0; i < all.length; i++) {
                     changecssproperty(all[i], transformprop, transformvalue2);
                 }
             }, 250);
@@ -1664,15 +703,15 @@ function octave_up() {
 // this function plays the given notes. the index parameter is used for
 // recursion. the initial function call should use zero for index
 function playback(notes, index) {
-    var audio;
-    var notePair;
+    let audio;
+    let notePair;
 
     // check to make sure the song is not empty, playback is not false, you have not receached the end of the song, and parseABCNote returned no errors
     if (notes != "" && stopPlayback == false && index < notes.length && (notePair = parseABCNote(notes[index], location.pathname, global_meter, global_tempo)) != "") {
         // if note is chord
         if (notePair[0] instanceof Array) {
             // play all notes in the chord
-            for (var i = 0; i < notePair[0].length; i++) {
+            for (let i = 0; i < notePair[0].length; i++) {
                 audio = new Audio(notePair[0][i]);
                 audio.volume = global_volume / 100;
                 audio.play();
@@ -1680,12 +719,12 @@ function playback(notes, index) {
         }
         // if note is individual
         else {
-            var charArray = notes[index].split("");
+            let charArray = notes[index].split("");
             // if not a rest, play the not
             if (!(charArray[0] == "Z" || charArray[0] == "z")) {
                 audio = new Audio(notePair[0]);
                 audio.volume = global_volume / 100;
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     audio.volume = 0;
                     audio.play();
                     $(audio).animate({
@@ -1698,7 +737,7 @@ function playback(notes, index) {
         }
         // fade out the note if it is a flute or horn
         setTimeout(function() {
-            if (location.pathname == "/flute.php" || location.pathname == "/horn.php" || location.pathname == "/bass.php") {
+            if (instrument == "flute" || instrument == "horn" || instrument == "bass ") {
                 fadeoutAudio(audio);
             }
             playback(notes, index + 1)
@@ -1726,13 +765,13 @@ function playback(notes, index) {
 
 // modified playback function for use in the archive
 function archive_playback(notes, index, instrument, meter, tempo) {
-    var audio;
-    var notePair;
+    let audio;
+    let notePair;
     // check to make sure the song is not empty, playback is not false, you have not receached the end of the song, and parseABCNote returned no errors
     if (notes != "" && stopPlayback == false && index < notes.length && (notePair = parseABCNote(notes[index], instrument, meter, tempo)) != "") {
         // if note is chord
         if (notePair[0] instanceof Array) {
-            for (var i = 0; i < notePair[0].length; i++) {
+            for (let i = 0; i < notePair[0].length; i++) {
                 audio = new Audio(notePair[0][i]);
                 audio.volume = global_volume / 100;
                 audio.play();
@@ -1740,12 +779,12 @@ function archive_playback(notes, index, instrument, meter, tempo) {
         }
         // not chord
         else {
-            var charArray = notes[index].split("");
+            let charArray = notes[index].split("");
             // if not a rest, play the note
             if (!(charArray[0] == "Z" || charArray[0] == "z")) {
                 audio = new Audio(notePair[0]);
                 audio.volume = global_volume / 100;
-                if (instrument == "/flute.php" || instrument == "/horn.php") {
+                if (instrument == "/flute" || instrument == "/horn") {
                     audio.volume = 0;
                     audio.play();
                     $(audio).animate({
@@ -1758,7 +797,7 @@ function archive_playback(notes, index, instrument, meter, tempo) {
         }
         // fade out note if flute or horn
         setTimeout(function() {
-            if (instrument == "/flute.php" || instrument == "/horn.php" || instrument == "/bass.php") {
+            if (instrument == "/flute" || instrument == "/horn" || instrument == "/bass") {
                 fadeoutAudio(audio);
             }
             archive_playback(notes, index + 1, instrument, meter, tempo)
@@ -1771,528 +810,24 @@ function archive_playback(notes, index, instrument, meter, tempo) {
         $("li#" + nowPlayingID + " .list_playback").val("Playback");
     }
 }
-
-// get the key to be pressed from the abc pitch
-function getKeyFromPitch(pitch, octave, instrument) {
-    if (instrument == "/bell.php") {
-        switch (pitch) {
-            case "D":
-                return "{Numpad1 down}";
-            case "d":
-                if (octave == 0) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "d'":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "E":
-            case "e":
-            case "e'":
-                return "{Numpad2 down}";
-            case "F":
-            case "f":
-            case "f'":
-                return "{Numpad3 down}";
-            case "G":
-            case "g":
-            case "g'":
-                return "{Numpad4 down}";
-            case "A":
-            case "a":
-            case "a'":
-                return "{Numpad5 down}";
-            case "B":
-            case "b":
-            case "b'":
-                return "{Numpad6 down}";
-            case "c":
-            case "c'":
-            case "c''":
-                return "{Numpad7 down}";
-            case "d''":
-                return "{Numpad8 down}";
-            case "Z":
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/flute.php") {
-        switch (pitch) {
-            case "E":
-                return "{Numpad1 down}";
-            case "e":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "F":
-            case "f":
-                return "{Numpad2 down}";
-            case "G":
-            case "g":
-                return "{Numpad3 down}";
-            case "A":
-            case "a":
-                return "{Numpad4 down}";
-            case "B":
-            case "b":
-                return "{Numpad5 down}";
-            case "c":
-            case "c'":
-                return "{Numpad6 down}";
-            case "d":
-            case "d'":
-                return "{Numpad7 down}";
-            case "e'":
-                return "{Numpad8 down}";
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/horn.php") {
-        switch (pitch) {
-            case "E,":
-                return "{Numpad1 down}";
-            case "E":
-                if (octave == 0) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "e":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "F,":
-            case "F":
-            case "f":
-                return "{Numpad2 down}";
-            case "G,":
-            case "G":
-            case "g":
-                return "{Numpad3 down}";
-            case "A,":
-            case "A":
-            case "a":
-                return "{Numpad4 down}";
-            case "B,":
-            case "B":
-            case "b":
-                return "{Numpad5 down}";
-            case "C":
-            case "c":
-            case "c'":
-                return "{Numpad6 down}";
-            case "D":
-            case "d":
-            case "d'":
-                return "{Numpad7 down}";
-            case "e'":
-                return "{Numpad8 down}";
-            case "Z":
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/harp.php") {
-        switch (pitch) {
-            case "C,":
-                return "{Numpad1 down}";
-            case "C":
-                if (octave == 0) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "c":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "D,":
-            case "D":
-            case "d":
-                return "{Numpad2 down}";
-            case "E,":
-            case "E":
-            case "e":
-                return "{Numpad3 down}";
-            case "F,":
-            case "F":
-            case "f":
-                return "{Numpad4 down}";
-            case "G,":
-            case "G":
-            case "g":
-                return "{Numpad5 down}";
-            case "A,":
-            case "A":
-            case "a":
-                return "{Numpad6 down}";
-            case "B,":
-            case "B":
-            case "b":
-                return "{Numpad7 down}";
-            case "c'":
-                return "{Numpad8 down}";
-            case "Z":
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/lute.php") {
-        switch (pitch) {
-            case "C,":
-                return "{Numpad1 down}";
-            case "C":
-                if (octave == 0) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "c":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "D,":
-            case "D":
-            case "d":
-                return "{Numpad2 down}";
-            case "E,":
-            case "E":
-            case "e":
-                return "{Numpad3 down}";
-            case "F,":
-            case "F":
-            case "f":
-                return "{Numpad4 down}";
-            case "G,":
-            case "G":
-            case "g":
-                return "{Numpad5 down}";
-            case "A,":
-            case "A":
-            case "a":
-                return "{Numpad6 down}";
-            case "B,":
-            case "B":
-            case "b":
-                return "{Numpad7 down}";
-            case "c'":
-                return "{Numpad8 down}";
-            case "Z":
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/bell2.php") {
-        switch (pitch) {
-            case "c":
-                return "{Numpad1 down}";
-            case "c'":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "d":
-            case "d'":
-                return "{Numpad2 down}";
-            case "e":
-            case "e'":
-                return "{Numpad3 down}";
-            case "f":
-            case "f'":
-                return "{Numpad4 down}";
-            case "g":
-            case "g'":
-                return "{Numpad5 down}";
-            case "a":
-            case "a'":
-                return "{Numpad6 down}";
-            case "b":
-            case "b'":
-                return "{Numpad7 down}";
-            case "c''":
-                return "{Numpad8 down}";
-            case "z":
-            case "z'":
-                return "";
-        }
-    } else if (instrument == "/bass.php") {
-        switch (pitch) {
-            case "C,,,":
-                return "{Numpad1 down}";
-            case "C,,":
-                if (octave == 1) {
-                    return "{Numpad8 down}";
-                } else {
-                    return "{Numpad1 down}";
-                }
-            case "D,,,":
-            case "D,,":
-                return "{Numpad2 down}";
-            case "E,,,":
-            case "E,,":
-                return "{Numpad3 down}";
-            case "F,,,":
-            case "F,,":
-                return "{Numpad4 down}";
-            case "G,,,":
-            case "G,,":
-                return "{Numpad5 down}";
-            case "A,,,":
-            case "A,,":
-                return "{Numpad6 down}";
-            case "B,,,":
-            case "B,,":
-                return "{Numpad7 down}";
-            case "C,":
-                return "{Numpad8 down}";
-            case "z":
-            case "z'":
-                return "";
-        }
-    }
-    return "false";
-}
-
-// return the guild wars 2 octave given the abc pitch
-function getOctaveFromPitch(pitch, instrument) {
-    if (instrument == "/bell.php") {
-        switch (pitch) {
-            case "D":
-            case "E":
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-            case "c":
-            case "Z":
-                return 0;
-            case "e":
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "c'":
-            case "z":
-                return 1;
-            case "e'":
-            case "f'":
-            case "g'":
-            case "a'":
-            case "b'":
-            case "c''":
-            case "d''":
-            case "z'":
-                return 2;
-            case "d":
-                return 0.5;
-            case "d'":
-                return 1.5;
-        }
-    } else if (instrument == "/flute.php") {
-        switch (pitch) {
-            case "E":
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-            case "c":
-            case "d":
-            case "z":
-                return 1;
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "c'":
-            case "d'":
-            case "e'":
-            case "z'":
-                return 2;
-            case "e":
-                return 1.5;
-        }
-    } else if (instrument == "/horn.php") {
-        switch (pitch) {
-            case "E,":
-            case "F,":
-            case "G,":
-            case "A,":
-            case "B,":
-            case "C":
-            case "D":
-            case "Z":
-                return 0;
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-            case "c":
-            case "d":
-            case "z":
-                return 1;
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "c'":
-            case "d'":
-            case "e'":
-            case "z'":
-                return 2;
-            case "E":
-                return 0.5;
-            case "e":
-                return 1.5;
-        }
-    } else if (instrument == "/harp.php") {
-        switch (pitch) {
-            case "C,":
-            case "D,":
-            case "E,":
-            case "F,":
-            case "G,":
-            case "A,":
-            case "B,":
-            case "Z":
-                return 0;
-            case "D":
-            case "E":
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-            case "z":
-                return 1;
-            case "d":
-            case "e":
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "c'":
-            case "z'":
-                return 2;
-            case "C":
-                return 0.5;
-            case "c":
-                return 1.5;
-        }
-    } else if (instrument == "/lute.php") {
-        switch (pitch) {
-            case "C,":
-            case "D,":
-            case "E,":
-            case "F,":
-            case "G,":
-            case "A,":
-            case "B,":
-            case "Z":
-                return 0;
-            case "D":
-            case "E":
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-            case "z":
-                return 1;
-            case "d":
-            case "e":
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "c'":
-            case "z'":
-                return 2;
-            case "C":
-                return 0.5;
-            case "c":
-                return 1.5;
-        }
-    } else if (instrument == "/bell2.php") {
-        switch (pitch) {
-            case "c":
-            case "d":
-            case "e":
-            case "f":
-            case "g":
-            case "a":
-            case "b":
-            case "z":
-                return 1;
-            case "d'":
-            case "e'":
-            case "f'":
-            case "g'":
-            case "a'":
-            case "b'":
-            case "c''":
-            case "z'":
-                return 2;
-            case "c'":
-                return 1.5;
-        }
-    } else if (instrument == "/bass.php") {
-        switch (pitch) {
-            case "C,,,":
-            case "D,,,":
-            case "E,,,":
-            case "F,,,":
-            case "G,,,":
-            case "A,,,":
-            case "B,,,":
-            case "z":
-                return 1;
-            case "D,,":
-            case "E,,":
-            case "F,,":
-            case "G,,":
-            case "A,,":
-            case "B,,":
-            case "C,":
-            case "z'":
-                return 2;
-            case "C,,":
-                return 1.5;
-        }
-    }
-    return -1;
-}
-
 // this function finds the best direction to play a multi octave chord in order
 // to reduce octave switches
 function findDirection(octaveArray, startingOctave) {
-    var one = true;
-    var two = true;
-    var zero = true;
+    let one = true;
+    let two = true;
+    let zero = true;
     //check if the chord is only in one octave
-    for (var i = 0; i < octaveArray.length; i++) {
+    for (let i = 0; i < octaveArray.length; i++) {
         if (octaveArray[i] == 2 || octaveArray[i] == 0) {
             one = false;
         }
     }
-    for (var i = 0; i < octaveArray.length; i++) {
+    for (let i = 0; i < octaveArray.length; i++) {
         if (octaveArray[i] == 1 || octaveArray[i] == 0 || octaveArray[i] == 0.5) {
             two = false;
         }
     }
-    for (var i = 0; i < octaveArray.length; i++) {
+    for (let i = 0; i < octaveArray.length; i++) {
         if (octaveArray[i] == 1 || octaveArray[i] == 2 || octaveArray[i] == 1.5) {
             zero = false;
         }
@@ -2312,10 +847,10 @@ function findDirection(octaveArray, startingOctave) {
         return "down";
     } else {
         // play the chord in the direction that the majority of the notes are in
-        var sum = octaveArray.reduce(function(a, b) {
+        let sum = octaveArray.reduce(function(a, b) {
             return a + b
         });
-        var avg = sum / octaveArray.length;
+        let avg = sum / octaveArray.length;
         if (avg > 1) {
             return "up";
         } else if (avg < 1) {
@@ -2328,16 +863,16 @@ function findDirection(octaveArray, startingOctave) {
 
 // get the key to be pressed and the guild wars 2 octave from the abc pitch
 function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
-    var return_array = new Array();
-    var charArray = pitch.split('');
-    var currentNoteOctave;
+    let return_array = new Array();
+    let charArray = pitch.split('');
+    let currentNoteOctave;
 
     // if there are multiple pitches create an array
     if (charArray[0] == "[") {
-        var pitchArray = new Array();
-        var pitchIndex = -1;
+        let pitchArray = new Array();
+        let pitchIndex = -1;
         //populate the pitch array
-        for (var i = 1; i < charArray.length - 1; i++) {
+        for (let i = 1; i < charArray.length - 1; i++) {
             if (/^[a-gA-G]$/.test(charArray[i])) {
                 pitchIndex++;
                 pitchArray[pitchIndex] = charArray[i];
@@ -2346,7 +881,7 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
             }
         }
 
-        for (var i = 0; i < pitchArray.length; i++) {
+        for (let i = 0; i < pitchArray.length; i++) {
             //check syntax and return error if bad syntax
             if (checkPitchSyntax(pitchArray[i]) == false) {
                 return "";
@@ -2356,8 +891,8 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         // sort the pitch array in case the user manually input his chord out
         // of order.
         pitchArray.sort(function(a, b) {
-            var keyA = getKeyOctaveFromPitch(a, 0, instrument);
-            var keyB = getKeyOctaveFromPitch(b, 0, instrument);
+            let keyA = getKeyOctaveFromPitch(a, 0, instrument);
+            let keyB = getKeyOctaveFromPitch(b, 0, instrument);
             // compare octave
             if (keyA[1] > keyB[1]) {
                 return 1;
@@ -2375,7 +910,7 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         });
 
         // remove duplicate values from array
-        var uniquePitchArray = [];
+        let uniquePitchArray = [];
         $.each(pitchArray, function(i, el) {
             if ($.inArray(el, uniquePitchArray) === -1)
                 uniquePitchArray.push(el);
@@ -2386,7 +921,7 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
 
         // find the guild wars 2 octave
         currentNoteOctave = new Array();
-        for (var i = 0; i < pitchArray.length; i++) {
+        for (let i = 0; i < pitchArray.length; i++) {
             currentNoteOctave[i] = getOctaveFromPitch(pitchArray[i], instrument);
             if (currentNoteOctave[i] == -1) {
                 return ""
@@ -2394,13 +929,13 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         }
 
         // find the direction
-        var direction = findDirection(currentNoteOctave, previousNoteOctave);
+        let direction = findDirection(currentNoteOctave, previousNoteOctave);
 
         return_array[0] = new Array();
         return_array[1] = new Array();
         // get the key to be pressed with the up direction
         if (direction == "up") {
-            for (var i = 0; i < pitchArray.length; i++) {
+            for (let i = 0; i < pitchArray.length; i++) {
                 if (previousNoteOctave > currentNoteOctave[i]) {
                     return_array[1][i] = Math.ceil(currentNoteOctave[i]);
                 } else {
@@ -2414,8 +949,8 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         }
         // get the key to be pressed with the down direction and reverse the array
         else if (direction == "down") {
-            var j = 0;
-            for (var i = pitchArray.length - 1; i >= 0; i--) {
+            let j = 0;
+            for (let i = pitchArray.length - 1; i >= 0; i--) {
                 if (previousNoteOctave < currentNoteOctave[i]) {
                     return_array[1][j] = Math.floor(currentNoteOctave[i]);
                 } else {
@@ -2431,7 +966,7 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         // if this is reached it means the chord is only in a single octave. 
         // default direction of play in this case is up
         else {
-            for (var i = 0; i < pitchArray.length; i++) {
+            for (let i = 0; i < pitchArray.length; i++) {
                 return_array[1][i] = parseInt(direction);
                 return_array[0][i] = getKeyFromPitch(pitchArray[i], return_array[1][i], instrument);
                 if (return_array[0][i] == "false") {
@@ -2477,15 +1012,15 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
 // construct and return the manual script given the notes, instrument, and song
 // title
 function constructManualScript(notes, instrument, title) {
-    var outputString;
-    var keyOctavePair;
-    var abcPitch;
-    var currentKeyValue;
-    var previousNoteOctave = 1;
-    var currentNoteOctave;
-    var instrument_stripped = instrument.replace(".php", "").replace("/", "");
-    var i;
-    var j;
+    let outputString;
+    let keyOctavePair;
+    let abcPitch;
+    let currentKeyValue;
+    let previousNoteOctave = 1;
+    let currentNoteOctave;
+    let instrument_stripped = instrument.replace("", "").replace("/", "");
+    let i;
+    let j;
 
     //add the header information to the song
     outputString = "Title: " + title + "\n\nInstrument: " + instrument_stripped.charAt(0).toUpperCase() + instrument_stripped.slice(1) + "\n\n";
@@ -2505,7 +1040,7 @@ function constructManualScript(notes, instrument, title) {
             return "";
         }
 
-        // assign the variables from the keyoctavepair
+        // assign the letiables from the keyoctavepair
         currentKeyValue = keyOctavePair[0];
         currentNoteOctave = keyOctavePair[1];
 
@@ -2546,12 +1081,12 @@ function constructManualScript(notes, instrument, title) {
         else {
             if (currentNoteOctave < previousNoteOctave) {
                 outputString += "\u25BC ";
-                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp.php" || instrument == "/lute.php" || instrument == "/bell2.php")) {
+                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp" || instrument == "/lute" || instrument == "/redbell")) {
                     outputString += "\u25BC ";
                 }
             } else if (currentNoteOctave > previousNoteOctave) {
                 outputString += "\u25B2 ";
-                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp.php" || instrument == "/lute.php" || instrument == "/bell2.php")) {
+                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp" || instrument == "/lute" || instrument == "/redbell")) {
                     outputString += "\u25B2 ";
                 }
             }
@@ -2578,15 +1113,15 @@ function constructManualScript(notes, instrument, title) {
 // this function returns the amount of time to sleep. the sleep durations are
 // needed to make multioctave chords and double octave changes consistent
 function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOctave) {
-    var startNotes = new Array();
-    var endNotes = new Array();
-    var keyValueArray = keyOctavePairArray[0];
-    var noteOctaveArray = keyOctavePairArray[1];
-    var found = false;
+    let startNotes = new Array();
+    let endNotes = new Array();
+    let keyValueArray = keyOctavePairArray[0];
+    let noteOctaveArray = keyOctavePairArray[1];
+    let found = false;
 
     if (currentNoteOctave == 2) {
         // create an array composed of all key presses in the previous octave
-        for (var i = 0; i < noteOctaveArray.length; i++) {
+        for (let i = 0; i < noteOctaveArray.length; i++) {
             if (1 == noteOctaveArray[i] || 0 == noteOctaveArray[i]) {
                 startNotes.push(keyValueArray[i]);
                 found = true;
@@ -2594,7 +1129,7 @@ function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOcta
         }
     } else if (currentNoteOctave == 0) {
         // create an array composed of all key presses in the previous octave
-        for (var i = 0; i < noteOctaveArray.length; i++) {
+        for (let i = 0; i < noteOctaveArray.length; i++) {
             if (1 == noteOctaveArray[i] || 2 == noteOctaveArray[i]) {
                 startNotes.push(keyValueArray[i]);
                 found = true;
@@ -2602,7 +1137,7 @@ function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOcta
         }
     } else {
         // create an array composed of all key presses in the previous octave
-        for (var i = 0; i < noteOctaveArray.length; i++) {
+        for (let i = 0; i < noteOctaveArray.length; i++) {
             if (previousNoteOctave == noteOctaveArray[i]) {
                 startNotes.push(keyValueArray[i]);
                 found = true;
@@ -2625,11 +1160,11 @@ function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOcta
         }
     }
 
-    // reset the variable for the creation of the endNotes array
+    // reset the letiable for the creation of the endNotes array
     found = false;
 
     // create an array composed of all key presses in the current octave
-    for (var i = 0; i < noteOctaveArray.length; i++) {
+    for (let i = 0; i < noteOctaveArray.length; i++) {
         if (currentNoteOctave == noteOctaveArray[i]) {
             endNotes.push(keyValueArray[i]);
             found = true;
@@ -2641,8 +1176,8 @@ function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOcta
         return 0;
     }
 
-    for (var i = 0; i < startNotes.length; i++) {
-        for (var j = 0; j < endNotes.length; j++) {
+    for (let i = 0; i < startNotes.length; i++) {
+        for (let j = 0; j < endNotes.length; j++) {
             if (startNotes[i] == endNotes[j]) {
                 return 75;
             }
@@ -2653,28 +1188,28 @@ function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOcta
 }
 
 function constructAutoScript(notes, instrument, meter, tempo) {
-    var outputString = "";
-    var keyOctavePair;
-    var abcPitch;
-    var currentKeyValue;
-    var previousKeyValue = "";
-    var previousNoteOctave = 1;
-    var currentNoteOctave;
-    var finalNoteLength;
-    var noteLength;
-    var sleepDelay;
-    var currentDelay;
-    var i;
-    var j;
-    var k;
+    let outputString = "";
+    let keyOctavePair;
+    let abcPitch;
+    let currentKeyValue;
+    let previousKeyValue = "";
+    let previousNoteOctave = 1;
+    let currentNoteOctave;
+    let finalNoteLength;
+    let noteLength;
+    let sleepDelay;
+    let currentDelay;
+    let i;
+    let j;
+    let k;
 
     //make sure the lute is in the center octave
-    if (instrument == "/lute.php") {
+    if (instrument == "/lute") {
         outputString = "SendInput {Numpad0}\nSleep, 250\nSendInput {Numpad0}\nSleep, 250\nSendInput {Numpad0}\nSleep, 250\nSendInput {Numpad9}\nSleep, 250\n";
     }
 
     for (i = 0; i < notes.length; i++) {
-        //parse the note and initialize the variables
+        //parse the note and initialize the letiables
         abcPitch = stripchars(notes[i], "/1234567890");
 
         keyOctavePair = getKeyOctaveFromPitch(abcPitch, previousNoteOctave, instrument);
@@ -2706,7 +1241,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
         if (currentKeyValue instanceof Array) {
             // send the key up for the last note played
             if (previousKeyValue instanceof Array) {
-                for (var l = 0; l < previousKeyValue.length; l++) {
+                for (let l = 0; l < previousKeyValue.length; l++) {
                     outputString += "SendInput " + previousKeyValue[l].replace("down", "up") + "\n";
                 }
             } else if (previousKeyValue != "") {
@@ -2738,7 +1273,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
                 //send input for any octave changes
                 if (currentNoteOctave[j] < previousNoteOctave) {
                     // send the key up for the last note played
-                    for (var l = 0; l < previousKeyValue.length; l++) {
+                    for (let l = 0; l < previousKeyValue.length; l++) {
                         outputString += "SendInput " + previousKeyValue[l].replace("down", "up") + "\n";
                     }
 
@@ -2768,7 +1303,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
                     }
                 } else if (currentNoteOctave[j] > previousNoteOctave) {
                     // send the key up for the last note played
-                    for (var l = 0; l < previousKeyValue.length; l++) {
+                    for (let l = 0; l < previousKeyValue.length; l++) {
                         outputString += "SendInput " + previousKeyValue[l].replace("down", "up") + "\n";
                     }
 
@@ -2810,7 +1345,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
                     outputString += "SendInput " + previousKeyValue[j].replace("down", "up") + "\n";
                 }
             } else if (previousKeyValue != "") {
-                if (previousKeyValue == currentKeyValue && instrument == "/horn.php") {
+                if (previousKeyValue == currentKeyValue && instrument == "/horn") {
                     outputString += "SendInput {Esc}\n";
                 }
                 outputString += "SendInput " + previousKeyValue.replace("down", "up") + "\n";
@@ -2819,16 +1354,16 @@ function constructAutoScript(notes, instrument, meter, tempo) {
             //send input for any octave changes
             if (currentNoteOctave < previousNoteOctave) {
                 outputString += "SendInput {Numpad0}\n";
-                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp.php" || instrument == "/lute.php" || instrument == "/bell2.php")) {
+                if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp" || instrument == "/lute" || instrument == "/redbell")) {
                     outputString += "Sleep, 40\nSendInput {Numpad0}\n";
                     sleepDelay += 40;
                 }
             } else if (currentNoteOctave > previousNoteOctave) {
-                if (instrument == "/flute.php") {
+                if (instrument == "/flute") {
                     outputString += "SendInput {Numpad0}\n";
                 } else {
                     outputString += "SendInput {Numpad9}\n";
-                    if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp.php" || instrument == "/lute.php" || instrument == "/bell2.php")) {
+                    if (Math.abs(currentNoteOctave - previousNoteOctave) > 1 && (instrument == "/harp" || instrument == "/lute" || instrument == "/redbell")) {
                         outputString += "Sleep, 40\nSendInput {Numpad9}\n";
                         sleepDelay += 40;
                     }
@@ -2838,7 +1373,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
             // send the key press for the next note
             if (currentKeyValue != "") {
                 outputString += "SendInput " + currentKeyValue + "\n";
-            } else if (instrument == "/flute.php") {
+            } else if (instrument == "/flute") {
                 outputString += "SendInput {Numpad9}\n";
             }
 
@@ -2859,12 +1394,12 @@ function constructAutoScript(notes, instrument, meter, tempo) {
     }
 
     //stop the last note if flute or horn
-    if (instrument == "/flute.php") {
+    if (instrument == "/flute") {
         outputString += "SendInput " + previousKeyValue.replace("down", "up") + "\n";
         outputString += "SendInput {Numpad9}\n";
     } else {
         if (previousKeyValue instanceof Array) {
-            for (var l = 0; l < previousKeyValue.length; l++) {
+            for (let l = 0; l < previousKeyValue.length; l++) {
                 outputString += "SendInput " + previousKeyValue[l].replace("down", "up") + "\n";
             }
         } else if (previousKeyValue != "") {
@@ -2881,269 +1416,12 @@ function constructAutoScript(notes, instrument, meter, tempo) {
 /******************************************************************************/
 
 $(document).ready(function() {
+    document.getElementById(instrument).style.filter = "none";
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
+        document.getElementById("skill9").style.backgroundImage = "url('image/lock.png')";
+    }
+
     $("#songarea").focus();
-
-    /* // The following are the click functions for the numerators and denominators
-     $("#num_1").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_1").css("border", "#1f0504 solid 2px");
-         numerator = 1;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_2").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_2").css("border", "#000000 solid 2px");
-         numerator = 2;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_3").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_3").css("border", "#1f0504 solid 2px");
-         numerator = 3;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_4").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_4").css("border", "#1f0504 solid 2px");
-         numerator = 4;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_5").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_5").css("border", "#1f0504 solid 2px");
-         numerator = 5;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_6").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_6").css("border", "#1f0504 solid 2px");
-         numerator = 6;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_7").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_7").css("border", "#1f0504 solid 2px");
-         numerator = 7;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#num_8").click(function() {
-         var all = document.getElementsByClassName('num');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#num_8").css("border", "#1f0504 solid 2px");
-         numerator = 8;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#denom_1").click(function() {
-         var all = document.getElementsByClassName('denom');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#denom_1").css("border", "#1f0504 solid 2px");
-         denominator = 1;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#denom_2").click(function() {
-         var all = document.getElementsByClassName('denom');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#denom_2").css("border", "#1f0504 solid 2px");
-         denominator = 2;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#denom_3").click(function() {
-         var all = document.getElementsByClassName('denom');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#denom_3").css("border", "#1f0504 solid 2px");
-         denominator = 3;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#denom_4").click(function() {
-         var all = document.getElementsByClassName('denom');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#denom_4").css("border", "#1f0504 solid 2px");
-         denominator = 4;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     $("#denom_8").click(function() {
-         var all = document.getElementsByClassName('denom');
-         for (var i = 0; i < all.length; i++) {
-             all[i].style.border = "rgba(0, 0, 0, 0) solid 2px";
-         }
-         $("#denom_8").css("border", "#1f0504 solid 2px");
-         denominator = 8;
-         // focus on the text area to make the cursor appear
-         $("#songarea").focus();
-     });
-
-     //variable to help control when the global mouse up event fires
-     var down = false
-
-     // this button changes function multiple times. it is used to handle,
-     // playback, add rests, and add chords
-     $("#health").mousedown(function() {
-         changecssproperty(document.getElementById("health"), shadowprop, shadowvalue);
-         // if combat mode is enabled
-         if (combatMode == 1) {
-             var note;
-
-             // if chord mode is disabled
-             if (chordMode == 0) {
-                 if (currentOctave == 0) {
-                     note = "Z";
-                 } else if (currentOctave == 1) {
-                     note = "z";
-                 } else if (currentOctave == 2) {
-                     note = "z'";
-                 }
-             }
-             // if chord mode is enabled
-             else {
-                 note = "[";
-                 for (var i = 0; i < chordArray.length; i++) {
-                     note = note + chordArray[i];
-                 }
-                 note = note + "]";
-             }
-
-             var num_den = reduce(numerator, denominator);
-             if (num_den[0] == num_den[1]) {
-                 note = note + " ";
-             } else if (num_den[1] == 1) {
-                 note = note + num_den[0] + " ";
-             } else if (num_den[0] == 1) {
-                 note = note + "/" + num_den[1] + " ";
-             } else {
-                 note = note + num_den[0] + "/" + num_den[1] + " ";
-             }
-
-             if ((chordMode == 1 && chordArray.length > 1) || chordMode == 0) {
-                 var sel = $("#songarea").getSelection();
-                 if (sel.length == 0) {
-                     if ($("#songarea").val().substring(sel.start, sel.end + 1) == " ") {
-                         $("#songarea").setSelection(sel.end + 1, sel.end + 1);
-                     }
-                 }
-                 $("#songarea").replaceSelectedText(note, "collapseToEnd");
-                 $("#unsaved").html("Unsaved Changes");
-                 chordArray = [];
-                 $("#currentNotesInChord").html("");
-             } else {
-                 $("#add_err_song").show();
-                 $("#add_err_song").html("You must select 2 or more notes");
-                 $("#add_err_song").delay(2000).fadeOut("slow");
-             }
-         }
-         // if combat mode is disabled
-         else {
-             if (nowPlaying == false) {
-                 stopPlayback = false;
-                 nowPlaying = true;
-                 var sel = $("#songarea").getSelection();
-                 if (sel.length == 0) {
-                     playback($("#songarea").val().trim().split(/\s+/), 0);
-                 } else {
-                     playback(sel.text.trim().split(/\s+/), 0);
-                 }
-             } else {
-                 stopPlayback = true;
-             }
-         }
-         down = true;
-     });*/
-
-    // The following are the mousedown functions for the skill buttons
-    /* $("#skill1").mousedown(function() {
-         skill("skill1");
-         down = true;
-     });
-
-     $("#skill2").mousedown(function() {
-         skill("skill2");
-         down = true;
-     });
-
-     $("#skill3").mousedown(function() {
-         skill("skill3");
-         down = true;
-     });
-
-     $("#skill4").mousedown(function() {
-         skill("skill4");
-         down = true;
-     });
-
-     $("#skill5").mousedown(function() {
-         skill("skill5");
-         down = true;
-     });
-
-     $("#skill6").mousedown(function() {
-         skill("skill6");
-         down = true;
-     });
-
-     $("#skill7").mousedown(function() {
-         skill("skill7");
-         down = true;
-     });
-
-     $("#skill8").mousedown(function() {
-         skill("skill8");
-         down = true;
-     });
-*/
     let down = false;
     $("#skill9").mousedown(function() {
         octave_down();
@@ -3162,47 +1440,64 @@ $(document).ready(function() {
 
     $(document).mouseup(function() {
         if (down) {
-            var skills = document.getElementsByClassName("skill");
-            for (var i = 0; i < skills.length; i++) {
+            let skills = document.getElementsByClassName("skill");
+            for (let i = 0; i < skills.length; i++) {
                 // remove the shadow
                 changecssproperty(skills[i], shadowprop, '', 'remove');
             }
             // remove the shadow
             changecssproperty(document.getElementById("health"), shadowprop, '', 'remove');
             // fadeout audio if flute or horn
-            if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+            if (instrument == "flute" || instrument == "horn") {
                 fadeoutAudio(currentAudio);
             }
             // focus on the text area to make the cursor appear
             $("#songarea").focus();
-            // reset the down variable
+            // reset the down letiable
             down = false;
         }
     });
 
-    // these variables help control the hotkeys so holding down doesnt repeat
+    // these letiables help control the hotkeys so holding down doesnt repeat
     // the key press
-    var firedenter = false;
-    var fireddelete = false;
-    var firedswap = false;
-    var fired1 = false;
-    var fired2 = false;
-    var fired3 = false;
-    var fired4 = false;
-    var fired5 = false;
-    var fired6 = false;
-    var fired7 = false;
-    var fired8 = false;
-    var fired9 = false;
-    var fired0 = false;
+    let firedenter = false;
+    let fireddelete = false;
+    let firedswap = false;
+    let fired1 = false;
+    let fired2 = false;
+    let fired3 = false;
+    let fired4 = false;
+    let fired5 = false;
+    let fired6 = false;
+    let fired7 = false;
+    let fired8 = false;
+    let fired9 = false;
+    let fired0 = false;
 
     document.addEventListener('keydown', function(event) {
+        if (event.which == 112) window.location.replace('./intro.html?instrument=harp');
+        if (event.which == 113) window.location.replace('./intro.html?instrument=bell');
+        if (event.which == 114) window.location.replace('./intro.html?instrument=redbell');
+        if (event.which == 115) window.location.replace('./intro.html?instrument=bass');
+        if (event.which == 116) window.location.replace('./intro.html?instrument=lute');
+        if (event.which == 117) window.location.replace('./intro.html?instrument=horn');
+        if (event.which == 118) window.location.replace('./intro.html?instrument=flute');
         if (hotkeys == true) {
             $("#songarea").focus();
             if (event.which == 49) {
                 if (!fired1) {
                     fired1 = true;
-                    note = 1;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[1]';
+                            break;
+                        case 1:
+                            note = 1;
+                            break;
+                        case 2:
+                            note = `(1)`;
+                            break;
+                    }
                     skill("skill1");
                 }
                 event.preventDefault();
@@ -3211,7 +1506,17 @@ $(document).ready(function() {
             } else if (event.which == 50) {
                 if (!fired2) {
                     fired2 = true;
-                    note = 2;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[2]';
+                            break;
+                        case 1:
+                            note = 2;
+                            break;
+                        case 2:
+                            note = `(2)`;
+                            break;
+                    }
                     skill("skill2");
                 }
                 event.preventDefault();
@@ -3220,7 +1525,17 @@ $(document).ready(function() {
             } else if (event.which == 51) {
                 if (!fired3) {
                     fired3 = true;
-                    note = 3;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[3]';
+                            break;
+                        case 1:
+                            note = 3;
+                            break;
+                        case 2:
+                            note = `(3)`;
+                            break;
+                    }
                     skill("skill3");
                 }
                 event.preventDefault();
@@ -3229,7 +1544,17 @@ $(document).ready(function() {
             } else if (event.which == 52) {
                 if (!fired4) {
                     fired4 = true;
-                    note = 4;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[4]';
+                            break;
+                        case 1:
+                            note = 4;
+                            break;
+                        case 2:
+                            note = `(4)`;
+                            break;
+                    }
                     skill("skill4");
                 }
                 event.preventDefault();
@@ -3238,7 +1563,17 @@ $(document).ready(function() {
             } else if (event.which == 53) {
                 if (!fired5) {
                     fired5 = true;
-                    note = 5;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[5]';
+                            break;
+                        case 1:
+                            note = 5;
+                            break;
+                        case 2:
+                            note = `(5)`;
+                            break;
+                    }
                     skill("skill5");
                 }
                 event.preventDefault();
@@ -3247,7 +1582,17 @@ $(document).ready(function() {
             } else if (event.which == 54) {
                 if (!fired6) {
                     fired6 = true;
-                    note = 6;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[6]';
+                            break;
+                        case 1:
+                            note = 6;
+                            break;
+                        case 2:
+                            note = `(6)`;
+                            break;
+                    }
                     skill("skill6");
                 }
                 event.preventDefault();
@@ -3256,7 +1601,17 @@ $(document).ready(function() {
             } else if (event.which == 55) {
                 if (!fired7) {
                     fired7 = true;
-                    note = 7;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[7]';
+                            break;
+                        case 1:
+                            note = 7;
+                            break;
+                        case 2:
+                            note = `(7)`;
+                            break;
+                    }
                     skill("skill7");
                 }
                 event.preventDefault();
@@ -3265,7 +1620,17 @@ $(document).ready(function() {
             } else if (event.which == 56) {
                 if (!fired8) {
                     fired8 = true;
-                    note = 8;
+                    switch (currentOctave) {
+                        case 0:
+                            note = '[8]';
+                            break;
+                        case 1:
+                            note = 8;
+                            break;
+                        case 2:
+                            note = `(8)`;
+                            break;
+                    }
                     skill("skill8");
                 }
                 event.preventDefault();
@@ -3292,6 +1657,21 @@ $(document).ready(function() {
     });
 
     document.addEventListener('keyup', function(event) {
+        if (instrument == "flute" || instrument == "horn" || instrument == "bass ") {
+            console.log(currentAudio.volume)
+            let volume = currentAudio.volume;
+            let interval;
+            decreaseVolume = () => {
+                console.log(volume);
+                volume = volume - 0.1;
+                if (volume <= 0) {
+                    window.clearInterval(interval);
+                    currentAudio.volume = 0;
+                } else currentAudio.volume = volume;
+            };
+            interval = setInterval(decreaseVolume(), 50);
+            console.log(interval)
+        }
         if (hotkeys == true) {
             if (event.which == 187) {
                 firedenter = false;
@@ -3308,7 +1688,7 @@ $(document).ready(function() {
             } else if (event.which == 49) {
                 fired1 = false;
                 changecssproperty(document.getElementById("skill1"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill1") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3318,7 +1698,7 @@ $(document).ready(function() {
             } else if (event.which == 50) {
                 fired2 = false;
                 changecssproperty(document.getElementById("skill2"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill2") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3328,7 +1708,7 @@ $(document).ready(function() {
             } else if (event.which == 51) {
                 fired3 = false;
                 changecssproperty(document.getElementById("skill3"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill3") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3338,7 +1718,7 @@ $(document).ready(function() {
             } else if (event.which == 52) {
                 fired4 = false;
                 changecssproperty(document.getElementById("skill4"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill4") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3348,7 +1728,7 @@ $(document).ready(function() {
             } else if (event.which == 53) {
                 fired5 = false;
                 changecssproperty(document.getElementById("skill5"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill5") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3358,7 +1738,7 @@ $(document).ready(function() {
             } else if (event.which == 54) {
                 fired6 = false;
                 changecssproperty(document.getElementById("skill6"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill6") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3368,7 +1748,7 @@ $(document).ready(function() {
             } else if (event.which == 55) {
                 fired7 = false;
                 changecssproperty(document.getElementById("skill7"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill7") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }
@@ -3378,7 +1758,7 @@ $(document).ready(function() {
             } else if (event.which == 56) {
                 fired8 = false;
                 changecssproperty(document.getElementById("skill8"), shadowprop, '', 'remove');
-                if (location.pathname == "/flute.php" || location.pathname == "/horn.php") {
+                if (instrument == "flute" || instrument == "horn") {
                     if (getSoundFileFromSkillId("skill8") == currentAudio.src) {
                         fadeoutAudio(currentAudio);
                     }

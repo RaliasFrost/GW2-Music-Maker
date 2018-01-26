@@ -6,10 +6,16 @@
   "dependencies": {
     "electron": ">=1.4.15",
     "electron-json-storage": ">=3.0.5",
+    "electron-reload": ">=1.2.2",
     "moment": ">=2.13.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "electron-packager": "^10.1.1"
+  },
   "scripts": {
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/images/mac/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/images/256.ico --prune=true --out=release-builds --version-string.CompanyName=RF --version-string.FileDescription=RF --version-string.ProductName=\"GW2 - Music Maker\"",
+    "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/images/256.ico --prune=true --out=release-builds",
     "test": "electron ."
   },
   "repository": {

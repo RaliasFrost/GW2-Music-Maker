@@ -134,6 +134,8 @@ html {
 }
 
 textarea {
+    position: absolute;
+    top: 200px;
     width: 70%;
     height: 120px;
     border: none;
@@ -149,4 +151,64 @@ textarea {
 
 textarea:focus {
    outline: none;
+}
+
+.instrument {
+display: inline-block;
+height: 64px;
+width: 64px;
+margin-right: 5px;
+margin-top: 10px;
+-webkit-transition: all 0.3s ease-out;
+-moz-transition: all 0.3s ease-out;
+-o-transition: all 0.3s ease-out;
+-ms-transition: all 0.3s ease-out;
+transition: all 0.3s ease-out;
+}
+
+#centerskillbar {
+    position: absolute;
+    top: 30px;
+}
+#bell {
+    position: absolute;
+    top: 30px;
+    right: 520px;
+    background: url('../image/bell.png') no-repeat;
+}
+#harp {
+    position: absolute;
+    top: 30px;
+    right: 600px;
+    background: url('../image/harp.png') no-repeat;
+}
+#flute {
+     position: absolute;
+    top: 30px;
+    right: 120px;
+    background: url('../image/flute.png') no-repeat;
+}
+#bass {
+     position: absolute;
+    top: 30px;
+    right: 360px;
+    background: url('../image/bass.png') no-repeat;
+}
+#horn {
+     position: absolute;
+    top: 30px;
+    right: 200px;
+    background: url('../image/horn.png') no-repeat;
+}
+#lute {
+     position: absolute;
+    top: 30px;
+    right: 280px;
+    background: url('../image/lute.png') no-repeat;
+}
+#redbell {
+     position: absolute;
+    top: 30px;
+    right: 440px;
+    background: url('../image/redbell.png') no-repeat;
 }

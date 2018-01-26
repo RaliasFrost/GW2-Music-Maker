@@ -5,7 +5,6 @@
     <title>Hello World!</title>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>!window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>')</script>
-        <script>global_volume = 50</script>
         <script src="js/list.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/intro.css"/>
     <link rel="stylesheet" type="text/css" href="css/music.css"/>
@@ -16,16 +15,14 @@
     <div id="buttons">
       <a href="#" id="minimize" class="button" onClick=""><img src="image/u.png" id="u"/></a><a href="#" id="close" onClick="" class="button"><img src="image/x.png" id="x"/></a>
     </div>
+    <div id="instruments"><a id='harp' class='instrument' href="intro.html?instrument=harp"><div class="key_label" id="key_f1">F1</div></a><a id='redbell' class='instrument' href="intro.html?instrument=redbell"><div class="key_label" id="key_f3">F3</div></a><a id='bell' class='instrument' href="intro.html?instrument=bell"><div class="key_label" id="key_f2">F2</div></a><a id='lute' class='instrument' href="intro.html?instrument=lute"><div class="key_label" id="key_f5">F5</div></a><a id='horn' class='instrument' href="intro.html?instrument=horn"><div class="key_label" id="key_f6">F6</div></a><a id='bass' class='instrument' href="intro.html?instrument=bass"><div class="key_label" id="key_f4">F4</div></a><a id='flute' class='instrument' href="intro.html?instrument=flute"><div class="key_label" id="key_f7">F7</div></a></div>
     <span id="Test"></span>
     <div id="centerskillbar">
       <div id="swap"></div><div class="skill" id="skill1"></div><div class="skill" id="skill2"></div><div class="skill" id="skill3"></div><div class="skill" id="skill4"></div><div class="skill" id="skill5"></div><div id="health"><!--<div id="healthtext">Playback</div>--></div><div class="skill" id="skill6"></div><div class="skill" id="skill7"></div><div class="skill" id="skill8"></div><div class="skill" id="skill9"></div><div class="skill" id="skill0"></div>
       <div class="key_label" id="key_1">1</div><div class="key_label" id="key_2">2</div><div class="key_label" id="key_3">3</div><div class="key_label" id="key_4">4</div><div class="key_label" id="key_5">5</div><div class="key_label" id="key_6">6</div><div class="key_label" id="key_7">7</div><div class="key_label" id="key_8">8</div><div class="key_label" id="key_9">9</div><div class="key_label" id="key_0">0</div>
     </div>
     <textarea id="songarea" spellcheck="false"></textarea>
-
-    <div>
-      <p id="debug"> Progress! </p>  
-    </div>
+    <div><p id="Information"></p></div>
   </div>
   <body>
     <div id="main" class="text">
