@@ -18,7 +18,7 @@ function createWindow() {
     darkTheme: true,
     autoHideMenuBar: true,
   });
-  intro.webContents.openDevTools();
+  //intro.webContents.openDevTools();
   intro.setMenu(null);
   intro.setResizable(false);
   intro.loadURL(url.format({
@@ -36,6 +36,7 @@ ipc.on('musicData', function(event, arg) {
   event.sender.send('musicData', 'pong');
   console.log(arg);
 });
+
 
 ipc.on('log', function(event, arg) {
   console.log(arg);

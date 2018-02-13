@@ -169,46 +169,47 @@ transition: all 0.3s ease-out;
 #centerskillbar {
     position: absolute;
     top: 30px;
+    left: 20px;
 }
 #bell {
     position: absolute;
     top: 30px;
-    right: 520px;
+    right: 529px;
     background: url('../image/bell.png') no-repeat;
 }
 #harp {
     position: absolute;
     top: 30px;
-    right: 600px;
+    right: 609px;
     background: url('../image/harp.png') no-repeat;
 }
 #flute {
      position: absolute;
     top: 30px;
-    right: 120px;
+    right: 129px;
     background: url('../image/flute.png') no-repeat;
 }
 #bass {
      position: absolute;
     top: 30px;
-    right: 360px;
+    right: 369px;
     background: url('../image/bass.png') no-repeat;
 }
 #horn {
      position: absolute;
     top: 30px;
-    right: 200px;
+    right: 209px;
     background: url('../image/horn.png') no-repeat;
 }
 #lute {
      position: absolute;
     top: 30px;
-    right: 280px;
+    right: 289px;
     background: url('../image/lute.png') no-repeat;
 }
 #redbell {
      position: absolute;
     top: 30px;
-    right: 440px;
+    right: 449px;
     background: url('../image/redbell.png') no-repeat;
 }

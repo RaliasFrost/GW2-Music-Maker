@@ -56,6 +56,18 @@ let addCommentClicked = false;
 let instrument = null;
 
 
+let keys = [];
+
+const noteRegister = (data) => {
+    if (data.state) {
+        keys.push(data.key);
+    } else {
+        keys.splice(keys.indexOf(data.key), 1);
+    }
+};
+
+
+
 /******************************************************************************/
 /* Functions                                                                  */
 /******************************************************************************/
@@ -403,7 +415,7 @@ function checkPitchSyntax(pitch) {
 
 // returns the sound file and note length in milliseconds
 function parseABCNote(note, instrument, meter, tempo) {
-    let return_array = new Array();
+    let return_array = [];
 
     // if there is no note return an error
     if (note == "")
@@ -421,7 +433,7 @@ function parseABCNote(note, instrument, meter, tempo) {
             return "";
         }
 
-        let pitchArray = new Array();
+        let pitchArray = [];
         let pitchIndex = -1;
         //populate the pitch array
         for (let i = 1; i < charArray.length - 1; i++) {
@@ -443,7 +455,7 @@ function parseABCNote(note, instrument, meter, tempo) {
         // assign the now unique array back to the original array
         pitchArray = uniquePitchArray.slice();
 
-        return_array[0] = new Array();
+        return_array[0] = [];
         for (let i = 0; i < pitchArray.length; i++) {
             // check to make sure each note is well formed
             if (checkPitchSyntax(pitchArray[i]) == false) {
@@ -594,7 +606,7 @@ function removeChordArrayMember(note) {
 
 // this function is invoked when the ocrave down button is pressed
 function octave_down() {
-    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass") {
         if (currentOctave == 2) {
             currentOctave = 1;
             changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
@@ -649,7 +661,7 @@ function octave_down() {
 
 // this function is invoked when the ocrave up button is pressed
 function octave_up() {
-    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass") {
         if (currentOctave == 1) {
             currentOctave = 2;
             changecssproperty(document.getElementById("skill0"), shadowprop, shadowvalue);
@@ -737,10 +749,10 @@ function playback(notes, index) {
         }
         // fade out the note if it is a flute or horn
         setTimeout(function() {
-            if (instrument == "flute" || instrument == "horn" || instrument == "bass ") {
+            if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
                 fadeoutAudio(audio);
             }
-            playback(notes, index + 1)
+            playback(notes, index + 1);
         }, notePair[1]);
     }
     // handle the song ending for any reason
@@ -760,54 +772,6 @@ function playback(notes, index) {
             $("#add_err_song").html("Playback stopped by user");
         }
         $("#add_err_song").delay(2000).fadeOut("slow");
-    }
-}
-
-// modified playback function for use in the archive
-function archive_playback(notes, index, instrument, meter, tempo) {
-    let audio;
-    let notePair;
-    // check to make sure the song is not empty, playback is not false, you have not receached the end of the song, and parseABCNote returned no errors
-    if (notes != "" && stopPlayback == false && index < notes.length && (notePair = parseABCNote(notes[index], instrument, meter, tempo)) != "") {
-        // if note is chord
-        if (notePair[0] instanceof Array) {
-            for (let i = 0; i < notePair[0].length; i++) {
-                audio = new Audio(notePair[0][i]);
-                audio.volume = global_volume / 100;
-                audio.play();
-            }
-        }
-        // not chord
-        else {
-            let charArray = notes[index].split("");
-            // if not a rest, play the note
-            if (!(charArray[0] == "Z" || charArray[0] == "z")) {
-                audio = new Audio(notePair[0]);
-                audio.volume = global_volume / 100;
-                if (instrument == "/flute" || instrument == "/horn") {
-                    audio.volume = 0;
-                    audio.play();
-                    $(audio).animate({
-                        volume: (global_volume / 100)
-                    }, 100);
-                } else {
-                    audio.play();
-                }
-            }
-        }
-        // fade out note if flute or horn
-        setTimeout(function() {
-            if (instrument == "/flute" || instrument == "/horn" || instrument == "/bass") {
-                fadeoutAudio(audio);
-            }
-            archive_playback(notes, index + 1, instrument, meter, tempo)
-        }, notePair[1]);
-    }
-    // handle the song ending
-    else {
-        stopPlayback = false;
-        nowPlaying = false;
-        $("li#" + nowPlayingID + " .list_playback").val("Playback");
     }
 }
 // this function finds the best direction to play a multi octave chord in order
@@ -848,7 +812,7 @@ function findDirection(octaveArray, startingOctave) {
     } else {
         // play the chord in the direction that the majority of the notes are in
         let sum = octaveArray.reduce(function(a, b) {
-            return a + b
+            return a + b;
         });
         let avg = sum / octaveArray.length;
         if (avg > 1) {
@@ -863,13 +827,13 @@ function findDirection(octaveArray, startingOctave) {
 
 // get the key to be pressed and the guild wars 2 octave from the abc pitch
 function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
-    let return_array = new Array();
+    let return_array = [];
     let charArray = pitch.split('');
     let currentNoteOctave;
 
     // if there are multiple pitches create an array
     if (charArray[0] == "[") {
-        let pitchArray = new Array();
+        let pitchArray = [];
         let pitchIndex = -1;
         //populate the pitch array
         for (let i = 1; i < charArray.length - 1; i++) {
@@ -920,7 +884,7 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         pitchArray = uniquePitchArray.slice();
 
         // find the guild wars 2 octave
-        currentNoteOctave = new Array();
+        currentNoteOctave = [];
         for (let i = 0; i < pitchArray.length; i++) {
             currentNoteOctave[i] = getOctaveFromPitch(pitchArray[i], instrument);
             if (currentNoteOctave[i] == -1) {
@@ -931,8 +895,8 @@ function getKeyOctaveFromPitch(pitch, previousNoteOctave, instrument) {
         // find the direction
         let direction = findDirection(currentNoteOctave, previousNoteOctave);
 
-        return_array[0] = new Array();
-        return_array[1] = new Array();
+        return_array[0] = [];
+        return_array[1] = [];
         // get the key to be pressed with the up direction
         if (direction == "up") {
             for (let i = 0; i < pitchArray.length; i++) {
@@ -1113,8 +1077,8 @@ function constructManualScript(notes, instrument, title) {
 // this function returns the amount of time to sleep. the sleep durations are
 // needed to make multioctave chords and double octave changes consistent
 function getCurrentDelay(keyOctavePairArray, previousNoteOctave, currentNoteOctave) {
-    let startNotes = new Array();
-    let endNotes = new Array();
+    let startNotes = [];
+    let endNotes = [];
     let keyValueArray = keyOctavePairArray[0];
     let noteOctaveArray = keyOctavePairArray[1];
     let found = false;
@@ -1251,7 +1215,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
             // set k to zero
             k = 0;
             // set the previousKeyValue to an array
-            previousKeyValue = new Array();
+            previousKeyValue = [];
 
             // send the input for an octave change prior to beginning the chord
             if (currentNoteOctave[0] < previousNoteOctave) {
@@ -1278,7 +1242,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
                     }
 
                     // reset the previousKeyValue
-                    previousKeyValue = new Array();
+                    previousKeyValue = [];
                     k = 0;
                     // check to see if the next octave contains a matching key value
                     // to the current octave
@@ -1308,7 +1272,7 @@ function constructAutoScript(notes, instrument, meter, tempo) {
                     }
 
                     // reset the previousKeyValue
-                    previousKeyValue = new Array();
+                    previousKeyValue = [];
                     k = 0;
                     // check to see if the next octave contains a matching key value
                     // to the current octave
@@ -1411,13 +1375,21 @@ function constructAutoScript(notes, instrument, meter, tempo) {
     return outputString.trim();
 }
 
+const giveMeSpace = () => {
+    let textArea = $('#songarea').val();
+    $('#songarea').val(textArea + ' ');
+};
+
 /******************************************************************************/
 /* Functions Executed on Page Load                                            */
 /******************************************************************************/
 
+let resetInterval;
+
 $(document).ready(function() {
     document.getElementById(instrument).style.filter = "none";
-    if (instrument == "flute" || instrument == "redbell" || instrument == "bass ") {
+    if (instrument == "flute" || instrument == "redbell" || instrument == "bass") {
+        console.log(instrument);
         document.getElementById("skill9").style.backgroundImage = "url('image/lock.png')";
     }
 
@@ -1482,300 +1454,313 @@ $(document).ready(function() {
         if (event.which == 116) window.location.replace('./intro.html?instrument=lute');
         if (event.which == 117) window.location.replace('./intro.html?instrument=horn');
         if (event.which == 118) window.location.replace('./intro.html?instrument=flute');
-        if (hotkeys == true) {
-            $("#songarea").focus();
-            if (event.which == 49) {
-                if (!fired1) {
-                    fired1 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[1]';
-                            break;
-                        case 1:
-                            note = 1;
-                            break;
-                        case 2:
-                            note = `(1)`;
-                            break;
-                    }
-                    skill("skill1");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 50) {
-                if (!fired2) {
-                    fired2 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[2]';
-                            break;
-                        case 1:
-                            note = 2;
-                            break;
-                        case 2:
-                            note = `(2)`;
-                            break;
-                    }
-                    skill("skill2");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 51) {
-                if (!fired3) {
-                    fired3 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[3]';
-                            break;
-                        case 1:
-                            note = 3;
-                            break;
-                        case 2:
-                            note = `(3)`;
-                            break;
-                    }
-                    skill("skill3");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 52) {
-                if (!fired4) {
-                    fired4 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[4]';
-                            break;
-                        case 1:
-                            note = 4;
-                            break;
-                        case 2:
-                            note = `(4)`;
-                            break;
-                    }
-                    skill("skill4");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 53) {
-                if (!fired5) {
-                    fired5 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[5]';
-                            break;
-                        case 1:
-                            note = 5;
-                            break;
-                        case 2:
-                            note = `(5)`;
-                            break;
-                    }
-                    skill("skill5");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 54) {
-                if (!fired6) {
-                    fired6 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[6]';
-                            break;
-                        case 1:
-                            note = 6;
-                            break;
-                        case 2:
-                            note = `(6)`;
-                            break;
-                    }
-                    skill("skill6");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 55) {
-                if (!fired7) {
-                    fired7 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[7]';
-                            break;
-                        case 1:
-                            note = 7;
-                            break;
-                        case 2:
-                            note = `(7)`;
-                            break;
-                    }
-                    skill("skill7");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 56) {
-                if (!fired8) {
-                    fired8 = true;
-                    switch (currentOctave) {
-                        case 0:
-                            note = '[8]';
-                            break;
-                        case 1:
-                            note = 8;
-                            break;
-                        case 2:
-                            note = `(8)`;
-                            break;
-                    }
-                    skill("skill8");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 57) {
-                if (!fired9) {
-                    fired9 = true;
-                    octave_down();
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            } else if (event.which == 48) {
-                if (!fired0) {
-                    fired0 = true;
-                    octave_up();
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                return false;
-            }
+
+        if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
+            let reset = () => {
+                if (!currentAudio.loop) {
+                    currentAudio.volume = 0;
+                    currentAudio = null;
+                } else setTimeout(reset(), currentAudio.duration);
+            };
+            // setTimeout(reset(), currentAudio.duration);
+            currentAudio.loop = true;
+            console.log(currentAudio.duration);
         }
+
+        $("#songarea").focus();
+        if (event.which == 49 || event.which == 97) {
+            if (!fired1) {
+                fired1 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[1]';
+                        break;
+                    case 1:
+                        note = 1;
+                        break;
+                    case 2:
+                        note = `(1)`;
+                        break;
+                }
+                skill("skill1");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 50 || event.which == 98) {
+            if (!fired2) {
+                fired2 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[2]';
+                        break;
+                    case 1:
+                        note = 2;
+                        break;
+                    case 2:
+                        note = `(2)`;
+                        break;
+                }
+                skill("skill2");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 51 || event.which == 99) {
+            if (!fired3) {
+                fired3 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[3]';
+                        break;
+                    case 1:
+                        note = 3;
+                        break;
+                    case 2:
+                        note = `(3)`;
+                        break;
+                }
+                skill("skill3");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 52 || event.which == 100) {
+            if (!fired4) {
+                fired4 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[4]';
+                        break;
+                    case 1:
+                        note = 4;
+                        break;
+                    case 2:
+                        note = `(4)`;
+                        break;
+                }
+                skill("skill4");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 53 || event.which == 101) {
+            if (!fired5) {
+                fired5 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[5]';
+                        break;
+                    case 1:
+                        note = 5;
+                        break;
+                    case 2:
+                        note = `(5)`;
+                        break;
+                }
+                skill("skill5");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 54 || event.which == 102) {
+            if (!fired6) {
+                fired6 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[6]';
+                        break;
+                    case 1:
+                        note = 6;
+                        break;
+                    case 2:
+                        note = `(6)`;
+                        break;
+                }
+                skill("skill6");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 55 || event.which == 103) {
+            if (!fired7) {
+                fired7 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[7]';
+                        break;
+                    case 1:
+                        note = 7;
+                        break;
+                    case 2:
+                        note = `(7)`;
+                        break;
+                }
+                skill("skill7");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 56 || event.which == 104) {
+            if (!fired8) {
+                fired8 = true;
+                switch (currentOctave) {
+                    case 0:
+                        note = '[8]';
+                        break;
+                    case 1:
+                        note = 8;
+                        break;
+                    case 2:
+                        note = `(8)`;
+                        break;
+                }
+                skill("skill8");
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 57 || event.which == 105) {
+            if (!fired9) {
+                fired9 = true;
+                octave_down();
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        } else if (event.which == 48 || event.which == 96) {
+            if (instrument == "flute" || instrument == "horn") {
+                fadeoutAudio(currentAudio);
+            }
+            if (!fired0) {
+                fired0 = true;
+                octave_up();
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+
     });
 
     document.addEventListener('keyup', function(event) {
-        if (instrument == "flute" || instrument == "horn" || instrument == "bass ") {
-            console.log(currentAudio.volume)
-            let volume = currentAudio.volume;
-            let interval;
-            decreaseVolume = () => {
-                console.log(volume);
-                volume = volume - 0.1;
-                if (volume <= 0) {
-                    window.clearInterval(interval);
-                    currentAudio.volume = 0;
-                } else currentAudio.volume = volume;
-            };
-            interval = setInterval(decreaseVolume(), 50);
-            console.log(interval)
-        }
-        if (hotkeys == true) {
-            if (event.which == 187) {
-                firedenter = false;
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 189) {
-                fireddelete = false;
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 192) {
-                firedswap = false;
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 49) {
-                fired1 = false;
-                changecssproperty(document.getElementById("skill1"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill1") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 50) {
-                fired2 = false;
-                changecssproperty(document.getElementById("skill2"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill2") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 51) {
-                fired3 = false;
-                changecssproperty(document.getElementById("skill3"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill3") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 52) {
-                fired4 = false;
-                changecssproperty(document.getElementById("skill4"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill4") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 53) {
-                fired5 = false;
-                changecssproperty(document.getElementById("skill5"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill5") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 54) {
-                fired6 = false;
-                changecssproperty(document.getElementById("skill6"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill6") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 55) {
-                fired7 = false;
-                changecssproperty(document.getElementById("skill7"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill7") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 56) {
-                fired8 = false;
-                changecssproperty(document.getElementById("skill8"), shadowprop, '', 'remove');
-                if (instrument == "flute" || instrument == "horn") {
-                    if (getSoundFileFromSkillId("skill8") == currentAudio.src) {
-                        fadeoutAudio(currentAudio);
-                    }
-                }
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 57) {
-                fired9 = false;
-                changecssproperty(document.getElementById("skill9"), shadowprop, '', 'remove');
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
-            } else if (event.which == 48) {
-                fired0 = false;
-                changecssproperty(document.getElementById("skill0"), shadowprop, '', 'remove');
-                // focus on the text area to make the cursor appear
-                $("#songarea").focus();
+        if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
+            currentAudio.loop = false;
+            if (instrument == "flute" || instrument == "horn") {
+                fadeoutAudio(currentAudio);
             }
         }
+        if (event.which == 187) {
+            firedenter = false;
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 189) {
+            fireddelete = false;
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 192) {
+            firedswap = false;
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 49 || event.which == 97) {
+            giveMeSpace();
+            fired1 = false;
+            changecssproperty(document.getElementById("skill1"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill1") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 50 || event.which == 98) {
+            giveMeSpace();
+            fired2 = false;
+            changecssproperty(document.getElementById("skill2"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill2") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 51 || event.which == 99) {
+            giveMeSpace();
+            fired3 = false;
+            changecssproperty(document.getElementById("skill3"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill3") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 52 || event.which == 100) {
+            giveMeSpace();
+            fired4 = false;
+            changecssproperty(document.getElementById("skill4"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill4") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 53 || event.which == 101) {
+            giveMeSpace();
+            fired5 = false;
+            changecssproperty(document.getElementById("skill5"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill5") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 54 || event.which == 102) {
+            giveMeSpace();
+            fired6 = false;
+            changecssproperty(document.getElementById("skill6"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill6") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 55 || event.which == 103) {
+            giveMeSpace();
+            fired7 = false;
+            changecssproperty(document.getElementById("skill7"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill7") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 56 || event.which == 104) {
+            giveMeSpace();
+            fired8 = false;
+            changecssproperty(document.getElementById("skill8"), shadowprop, '', 'remove');
+            if (instrument == "flute" || instrument == "horn") {
+                if (getSoundFileFromSkillId("skill8") == currentAudio.src) {
+                    fadeoutAudio(currentAudio);
+                }
+            }
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 57 || event.which == 105) {
+            fired9 = false;
+            changecssproperty(document.getElementById("skill9"), shadowprop, '', 'remove');
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        } else if (event.which == 48 || event.which == 96) {
+            fired0 = false;
+            changecssproperty(document.getElementById("skill0"), shadowprop, '', 'remove');
+            // focus on the text area to make the cursor appear
+            $("#songarea").focus();
+        }
+
     });
 });
