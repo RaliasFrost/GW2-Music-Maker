@@ -4,13 +4,12 @@
   "description": " A tool that can be used to create music sheets for Guild Wars Two Musical instruments ",
   "main": "main.js",
   "dependencies": {
-    "electron": ">=1.4.15",
+    "electron": "^1.8.2",
     "electron-json-storage": ">=3.0.5",
-    "electron-reload": ">=1.2.2",
     "moment": ">=2.13.0"
   },
   "devDependencies": {
-    "electron-packager": "^10.1.1"
+    "electron-reload": ">=1.2.2"
   },
   "scripts": {
     "win": "electron-packager . GW2-Tabber --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/images/256.ico --prune=true --out=release-builds --version-string.CompanyName=RF --version-string.FileDescription=RF --version-string.ProductName=\"GW2 - Tabber\"",

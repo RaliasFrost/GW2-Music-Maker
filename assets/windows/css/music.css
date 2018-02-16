@@ -92,14 +92,16 @@ a.navicon:hover {
 
 /* The skill bar */
 #centerskillbar {
-    position: relative;
+    position: absolute;
+    left: -20px;
+    top: 90px;;
     width: 840px;
     height: 117px;
     padding-right: 38px;
     padding-top: 43px;
 }
 
-#swap{51
+#swap{
     display: inline-block;
     margin-right: 2px;
     margin-bottom: 25px;
@@ -205,53 +207,53 @@ a.navicon:hover {
 }
 
 #key_1 {
-    left: 045px;
-    top: 188px;
+    left: 076px;
+    top: 122px;
 }
 
 #key_2 {
-    left: 110px;
-    top: 188px;
+    left: 145px;
+    top: 122px;
 }
 
 #key_3 {
-    left: 175px;
-    top: 188px;
+    left: 215px;
+    top: 122px;
 }
 
 #key_4 {
-    left: 240px;
-    top: 188px;
+    left: 284px;
+    top: 122px;
 }
 
 #key_5 {
-    left: 305px;
-    top: 188px;
+    left: 353px;
+    top: 122px;
 }
 
 #key_6 {
-    left: 474px;
-    top: 188px;
+    left: 528px;
+    top: 122px;
 }
 
 #key_7 {
-    left: 539px;
-    top: 188px;
+    left: 597px;
+    top: 122px;
 }
 
 #key_8 {
-    left: 604px;
-    top: 188px;
+    left: 665px;
+    top: 122px;
 }
 
 #key_9 {
-    left: 669px;
-    top: 188px;
+    left: 735px;
+    top: 122px;
 }
 
 #key_0 {
-    left: 734px;
-    top: 188px;
+    left: 804px;
+    top: 122px;
 }
 
 #key_f1 {
@@ -279,7 +281,6 @@ a.navicon:hover {
 /* The main text area that contains the notes of the song */
 #songarea{
      position: absolute;
-  width: 80%;
   height: 200px;
   z-index: 15;
   top: 700%;

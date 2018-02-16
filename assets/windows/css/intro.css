@@ -136,7 +136,7 @@ html {
 textarea {
     position: absolute;
     top: 200px;
-    width: 70%;
+    width: 80%;
     height: 120px;
     border: none;
         padding: 5px;
@@ -166,50 +166,45 @@ margin-top: 10px;
 transition: all 0.3s ease-out;
 }
 
-#centerskillbar {
-    position: absolute;
-    top: 30px;
-    left: 20px;
-}
 #bell {
     position: absolute;
     top: 30px;
-    right: 529px;
+    right: 561px;
     background: url('../image/bell.png') no-repeat;
 }
 #harp {
     position: absolute;
     top: 30px;
-    right: 609px;
+    right: 641px;
     background: url('../image/harp.png') no-repeat;
 }
 #flute {
      position: absolute;
     top: 30px;
-    right: 129px;
+    right: 161px;
     background: url('../image/flute.png') no-repeat;
 }
 #bass {
      position: absolute;
     top: 30px;
-    right: 369px;
+    right: 401px;
     background: url('../image/bass.png') no-repeat;
 }
 #horn {
      position: absolute;
     top: 30px;
-    right: 209px;
+    right: 241px;
     background: url('../image/horn.png') no-repeat;
 }
 #lute {
      position: absolute;
     top: 30px;
-    right: 289px;
+    right: 321px;
     background: url('../image/lute.png') no-repeat;
 }
 #redbell {
      position: absolute;
     top: 30px;
-    right: 449px;
+    right: 481px;
     background: url('../image/redbell.png') no-repeat;
 }
