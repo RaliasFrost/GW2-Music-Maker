@@ -1,5 +1,4 @@
 const electron = require('electron');
-const settings = require('electron-settings');
 const app = electron.app;
 
 const BrowserWindow = electron.BrowserWindow;

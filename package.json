@@ -8,10 +8,11 @@
     "moment": ">=2.13.0"
   },
   "devDependencies": {
+    "electron-packager": "^11.0.1",
     "electron-reload": ">=1.2.2"
   },
   "scripts": {
-    "win": "electron-packager . GW2-Tabber --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/images/256.ico --prune=true --out=release-builds --version-string.CompanyName=RF --version-string.FileDescription=RF --version-string.ProductName=\"GW2 - Tabber\"",
+    "win": "electron-packager . GW2-Tabber --overwrite --asar --platform=win32 --arch=ia32 --icon=assets/images/256.ico --prune=true --out=release-builds --version-string.CompanyName=RF --version-string.FileDescription=RF --version-string.ProductName=\"GW2 - Tabber\"",
     "test": "electron ."
   },
   "repository": {
