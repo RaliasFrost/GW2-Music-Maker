@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title id="title"></title>
+    <title id="title">GW2 Tabber - Main</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-    !window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>')
+    !window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>');
     </script>
     <script src="js/list.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/intro.css" />
@@ -14,8 +14,9 @@
 </head>
 <script src="js/music.js"></script>
 <div id="topBar">
+    <p id="windowTitle">GW2 Tabber - Main</p>
     <div id="buttons">
-        <a href="#" id="minimize" class="button" onClick=""><img src="image/u.png" id="u"/></a><a href="#" id="close" onClick="" class="button"><img src="image/x.png" id="x"/></a>
+        <a href="#" class="toolbar" id="settings">Settings</a> <a href="#" id="minimize" class="button" onClick=""><img src="image/u.png"/></a><a href="#" id="close" onClick="" class="button"><img src="image/x.png" id="x"/></a>
     </div>
     <div id="instruments">
         <a id='harp' class='instrument' href="intro.html?instrument=harp">
@@ -66,7 +67,6 @@
         <div class="key_label" id="key_9">9</div>
         <div class="key_label" id="key_0">0</div>
     </div>
-    <textarea id="songarea" spellcheck="false"></textarea>
     <div class="settings" id="settingsContainer">
         <p></p>
     </div>
@@ -79,8 +79,7 @@
 
 <body>
     <div id="main" class="text">
-        <div class="spacer"></div>
-        <span id="debug"></span>
+        <textarea id="songarea" spellcheck="false"></textarea>
     </div>
 </body>
 <script>

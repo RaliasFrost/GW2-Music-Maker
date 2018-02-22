@@ -1,3 +1,4 @@
+const ipc = require('electron').ipcRenderer;
 
 console.log = function(x) {
     ipc.send('log', x);
@@ -18,9 +19,4 @@ document.getElementById('close').addEventListener('click', (event) => {
 
 document.getElementById('minimize').addEventListener('click', (event) => {
     remote.getCurrentWindow().minimize();
-});
-
-document.getElementById('settings').addEventListener('click', (event) => {
-    ipc.send('settingsWindow', 'open');
-    remote.settingsWindow();
 });

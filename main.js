@@ -1,4 +1,5 @@
 const electron = require('electron');
+const settings = require('electron-settings');
 const app = electron.app;
 
 const BrowserWindow = electron.BrowserWindow;
@@ -8,15 +9,41 @@ const path = require('path');
 const url = require('url');
 //require('electron-reload')(__dirname);
 
-let intro;
+let intro, settingsW;
 
-function createWindow() {
+const createSettings = () => {
+    if (settingsW) settingsW.focus();
+    else {
+        settingsW = new BrowserWindow({
+            width: 300,
+            height: 300,
+            frame: false,
+            darkTheme: true,
+            autoHideMenuBar: true,
+            icon: 'assets/images/256.ico'
+        });
+        //intro.webContents.openDevTools();
+        settingsW.setMenu(null);
+        settingsW.setResizable(false);
+        settingsW.loadURL(url.format({
+            pathname: path.join(__dirname, 'assets/windows/settings.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+        settingsW.on('closed', () => {
+            intro = null;
+        });
+    }
+};
+
+const createWindow = () => {
     intro = new BrowserWindow({
         width: 820,
-        height: 700,
+        height: 550,
         frame: false,
         darkTheme: true,
         autoHideMenuBar: true,
+        transparent: true,
         icon: 'assets/images/256.ico'
     });
     //intro.webContents.openDevTools();
@@ -28,10 +55,14 @@ function createWindow() {
         slashes: true
     }));
     intro.on('closed', function() {
+        if (settingsW) settingsW.close();
         intro = null;
     });
-}
+};
 
+ipc.on('settingsWindow', (e, a) => {
+    if (a == 'open') createSettings();
+});
 
 ipc.on('musicData', function(event, arg) {
     event.sender.send('musicData', 'pong');

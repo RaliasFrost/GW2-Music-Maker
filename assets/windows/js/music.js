@@ -1,65 +1,54 @@
 /******************************************************************************/
+/* Electron Integration                                                       */
+/******************************************************************************/
+const ipc = require('electron').ipcRenderer;
+const {
+    remote
+} = require('electron');
+ipc.on('settingsChange', (event, arg) => {
+    console.log(arg);
+});
+
+/******************************************************************************/
 /* Global letiables                                                           */
 /******************************************************************************/
-
-// the current octave of the instrument
 let currentOctave = 1;
 let note = 'Hi';
-// this holds the currently playing audio file. this is necessary for fadeing
-// notes out
 let currentAudio = new Audio();
-// used to stop playback
 let stopPlayback = false;
-// used to show that a song is currently playing back
 let nowPlaying = false;
-// the song id of the currently playing song. used to stop playback for the
-// current song on the archive page
 let nowPlayingID = 0;
-// used to remember which song to add a comment to
 let commentSongID = 0;
-// recording (1) or not recording (0)
 let combatMode = 1;
-// chord mode off (0) chord mode on (1)
 let chordMode = 0;
-// the notes in the current chord
 let chordArray = [];
-// the tempo, meter, and volume of the current song
 let global_tempo = 90;
 let global_meter = 4;
 let global_volume = 30;
-// numerator and denominator of the note length multiplier
 let numerator = 1;
 let denominator = 1;
-// hotkeys off = false hotkeys on = true
 let hotkeys = true;
-// properties to test for shadow
 let shadowprop = getsupportedprop(['boxShadow',
     'mozBoxShadow',
     'webkitBoxShadow'
 ]);
-// properties to test for transforming
 let transformprop = getsupportedprop(['webkitTransform',
     'mozTransform',
     'msTransform',
     'oTransform',
     'transform'
 ]);
-
-// this is the shadow property used when a key is pressed
 let shadowvalue = '0 0 15px 10px #000000 inset';
-// these are the rotate values for when changing octaves
 let transformvalue1 = 'rotateX(90deg)';
 let transformvalue2 = 'rotateX(0deg)';
-// this global letiable is used to stop double posts when the add comment button
-// is clicked twice
-// 
 let addCommentClicked = false;
-
 let instrument = null;
-
 let keysSinceOChange = [];
 let keys = [];
 
+/******************************************************************************/
+/* Functions                                                                  */
+/******************************************************************************/
 const chordRegister = (data) => {
     if (data.state) {
         keys.push(data.key);
@@ -67,16 +56,17 @@ const chordRegister = (data) => {
         keys.splice(keys.indexOf(data.key), 1);
     }
 };
-
 let octaveChenged = true;
-
 const chordProcess = () => {
     let textValue = $('#songarea').val();
     let chordRegex = new RegExp(keys.join('') + '$');
     $('#songarea').val(textValue.replace(chordRegex, keys.join('/')));
     keys = [];
 };
-
+/**
+ * This is to clean up extra whitespace created by the program to trim up the look of the tab
+ * @return {null}
+ */
 const cleanUp = () => {
     $('#songarea').val($('#songarea').val().replace(/  /g, ' '));
     $('#songarea').val($('#songarea').val().replace(/ \)/g, ')'));
@@ -84,11 +74,14 @@ const cleanUp = () => {
     $('#songarea').val($('#songarea').val().replace(/\( /g, '('));
     $('#songarea').val($('#songarea').val().replace(/\[ /g, '['));
 };
-
+/**
+ * This is to process the notes played and what octave it currently is and appropriatly add tab notation
+ * @param  {object} data Data containing the current, and previous octave
+ * @return {null}   
+ */
 const processTab = (data) => {
     let textValue = $('#songarea').val();
     if (data.oChange) {
-
         switch (data.octave) {
             case 0:
                 if (!/\[$/.test(textValue)) {
@@ -125,21 +118,18 @@ const processTab = (data) => {
         }
     }
 };
-
-
-/******************************************************************************/
-/* Functions                                                                  */
-/******************************************************************************/
-
+/**
+ * This is for electron, it is to read what instrument is selected from the hidden url bar
+ * @param  {string} sParam Spram is the parameter to retrive from the url string
+ * @return {string}        Returns a string of the currently selected instrument
+ */
 const getUrlParameter = (sParam) => {
     let sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLletiables = sPageURL.split('&'),
         sParameterName,
         i;
-
     for (i = 0; i < sURLletiables.length; i++) {
         sParameterName = sURLletiables[i].split('=');
-
         if (sParameterName[0] === sParam) {
             return sParameterName[1] === undefined ? true : sParameterName[1];
         }
@@ -152,34 +142,26 @@ console.log("instrument: " + instrument);
 if (!instrument) window.location.replace('./intro.html?instrument=harp');
 
 Array.prototype.pushIfNotExist = function(element) {
-    // this if statement should never be false, but i've left it in since
-    // it doesn't hurt anything
     if (jQuery.inArray(element, this) == -1) {
         this.push(element);
         this.sort(function(a, b) {
             let keyA = getKeyOctaveFromPitch(a, 0, location.pathname);
             let keyB = getKeyOctaveFromPitch(b, 0, location.pathname);
-            // compare octaves first
             if (keyA[1] > keyB[1]) {
                 return 1;
             } else if (keyA[1] < keyB[1]) {
                 return -1;
-            }
-            // then compare the notes themselves
-            else if (keyA[0] > keyB[0]) {
+            } else if (keyA[0] > keyB[0]) {
                 return 1;
             } else if (keyA[0] < keyB[0]) {
                 return -1;
-            }
-            // if it gets this far then they are equal
-            else {
+            } else {
                 return 0;
             }
         });
     }
 };
 
-// remove the given element from the array
 Array.prototype.removeValue = function(element) {
     let index = this.indexOf(element);
     if (index > -1) {
@@ -187,38 +169,36 @@ Array.prototype.removeValue = function(element) {
     }
 };
 
-// Reduce a fraction by finding the Greatest Common Divisor and dividing by it.
-function reduce(num, den) {
+/*
+    These following functions I didn't make, and haven't bothered readting through yet and optimizing what I do need and trimming what I don't
+ */
+const reduce = (num, den) => {
     let gcd = function gcd(a, b) {
         return b ? gcd(b, a % b) : a;
     };
     gcd = gcd(num, den);
     return [num / gcd, den / gcd];
-}
+};
 
-// remove the given characters from the given string
-function stripchars(string, chars) {
+const stripchars = (string, chars) => {
     return string.replace(RegExp('[' + chars + ']', 'g'), '');
 }
 
-// return the property from the given array that works in the current browser
 function getsupportedprop(proparray) {
-    let root = document.documentElement; //reference root element of document
-    for (let i = 0; i < proparray.length; i++) { //loop through possible properties
-        if (proparray[i] in root.style) { //if property exists on element (value will be string, empty string if not set)
-            return proparray[i]; //return that string
+    let root = document.documentElement;
+    for (let i = 0; i < proparray.length; i++) {
+        if (proparray[i] in root.style) {
+            return proparray[i];
         }
     }
 }
 
-// change css3 property
 function changecssproperty(target, prop, value, action) {
     if (typeof prop != "undefined") {
         target.style[prop] = (action == "remove") ? "" : value;
     }
 }
 
-// switch to and from combat mode
 function swap() {
     if ($('#centerskillbackground').css('opacity') == 0) {
         stopPlayback = true;
@@ -244,7 +224,6 @@ function swap() {
     }
 }
 
-//fade out the current audio without interupting future notes
 function fadeoutAudio(tempAudio) {
     $(tempAudio).animate({
         volume: 0
@@ -254,8 +233,12 @@ function fadeoutAudio(tempAudio) {
     }, 500);
 }
 
-// get the sound file URL based on the octave, instrument, and skill id
-function getSoundFileFromSkillId(skill_id) {
+/**
+ * This is a heavily optimised bit of code i borrowed from GW2mb.com, it use to be much longer, but now it is much better thanks to the use of string templates
+ * @param  {string} skill_id The ID for the current skill being pressed
+ * @return {string}          Returns the filepath for the desired audio file
+ */
+const getSoundFileFromSkillId = (skill_id) => {
     let return_soundfile;
     switch (skill_id) {
         case `skill1`:
@@ -286,28 +269,13 @@ function getSoundFileFromSkillId(skill_id) {
     return return_soundfile;
 }
 
-// this function is called when a skill button is pressed
 function skill(skill_id) {
     let return_string;
-    // reduce the numerator and denominator (ex. 6/4 => 3/2) and store the
-    // result in num_den array
     let num_den = reduce(numerator, denominator);
-
-    //stop audio if flute or horn before beginning a new note
-
-
-    // select the note and instrument to play and prepare the audio for playback
     currentAudio = new Audio(getSoundFileFromSkillId(skill_id));
     currentAudio.volume = (global_volume / 100);
-
-    // get the note that should be written to the songarea
-
-    // apply the shadow property to the skill icon
     changecssproperty(document.getElementById(skill_id), shadowprop, shadowvalue);
-
-    // if chord mode is not enabled, play the note
     if (chordMode == 0) {
-        // play the note
         if (instrument == "flute" || instrument == "horn") {
             currentAudio.volume = 0;
             currentAudio.play();
@@ -318,17 +286,13 @@ function skill(skill_id) {
             currentAudio.play();
         }
     } else {
-        // if chord mode is enabled and the note is unselected, add the note to
-        // the chordArray, and play the note
         if (jQuery.inArray(note, chordArray) == -1) {
             chordArray.pushIfNotExist(note);
             return_string = "";
-            // create the chord array for display above the chord mode button
             for (let i = 0; i < chordArray.length; i++) {
                 return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
             }
             $("#currentNotesInChord").html(return_string);
-            // play the note
             if (instrument == "flute" || instrument == "horn") {
                 currentAudio.volume = 0;
                 currentAudio.play();
@@ -338,21 +302,15 @@ function skill(skill_id) {
             } else {
                 currentAudio.play();
             }
-        }
-        // if chord mode is enabled and the note is selected, remove the note
-        // from the chordArray
-        else {
+        } else {
             chordArray.removeValue(note);
             return_string = "";
-            // create the chord array for display above the chord mode button
             for (let i = 0; i < chordArray.length; i++) {
                 return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
             }
             $("#currentNotesInChord").html(return_string);
         }
     }
-
-    // add the note length multiplier to the end of the note
     if (num_den[0] == num_den[1]) {
         note = note + " ";
     } else if (num_den[1] == 1) {
@@ -362,20 +320,15 @@ function skill(skill_id) {
     } else {
         note = note + num_den[0] + "/" + num_den[1] + " ";
     }
-
-    // if combatMode is enabled and chordMode is not, write the note to the
-    // songarea
     throw "Musical Note";
 }
 
-// this function is invoked when the ocrave down button is pressed
 function octave_down() {
     processTab({
         oChange: true,
         pOctave: currentOctave,
         octave: currentOctave - 1 == -1 ? 0 : currentOctave - 1
     });
-
     if (instrument == 'flute') {
         changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
         let all = document.getElementsByClassName('skill');
@@ -445,16 +398,12 @@ function octave_down() {
     }
 }
 
-
-
-// this function is invoked when the octave up button is pressed
 function octave_up() {
     processTab({
         oChange: true,
         pOctave: currentOctave,
         octave: currentOctave + 1 == 3 ? 2 : currentOctave + 1
     });
-
     if (instrument == 'flute') {
         changecssproperty(document.getElementById("skill9"), shadowprop, shadowvalue);
         let all = document.getElementsByClassName('skill');
@@ -474,7 +423,6 @@ function octave_up() {
             }, 250);
         }
     }
-
     if (instrument == "redbell" || instrument == "bass") {
         if (currentOctave == 1) {
             currentOctave = 2;
@@ -525,21 +473,16 @@ function octave_up() {
         }
     }
 }
-
 let spacingTime;
-
 const spaceTiming = () => {
     window.clearTimeout(spacingTime);
     spacingTime = setTimeout(() => giveMeSpace(), 100);
 };
-
 const giveMeSpace = () => {
     let textArea = $('#songarea').val();
     $('#songarea').val(textArea + ' ');
 };
-
 let chords = true;
-
 let instrumentCheck = () => {
     switch (instrument) {
         case 'flute':
@@ -558,22 +501,17 @@ let instrumentCheck = () => {
             return;
     }
 };
-
 /******************************************************************************/
 /* Functions Executed on Page Load                                            */
 /******************************************************************************/
-
 let resetInterval;
-
 $(document).ready(function() {
     if (instrument == 'flute') document.getElementById("skill0").style.backgroundImage = "url('image/stop.png')";
     if (instrument == 'flute') document.getElementById("skill9").style.backgroundImage = "url('image/octave_up.png')";
-
     document.getElementById(instrument).style.filter = "none";
     if (instrument == "redbell" || instrument == "bass") {
         document.getElementById("skill9").style.backgroundImage = "url('image/lock.png')";
     }
-
     $("#songarea").focus();
     let down = false;
     $("#skill9").mousedown(function() {
@@ -581,38 +519,29 @@ $(document).ready(function() {
         down = true;
     });
     /*
-         $("#skill9_flute").mousedown(function() {
-             octave_down();
-             down = true;
-         });
+    $("#skill9_flute").mousedown(function() {
+    octave_down();
+    down = true;
+    });
     */
     $("#skill0").mousedown(function() {
         octave_up();
         down = true;
     });
-
     $(document).mouseup(function() {
         if (down) {
             let skills = document.getElementsByClassName("skill");
             for (let i = 0; i < skills.length; i++) {
-                // remove the shadow
                 changecssproperty(skills[i], shadowprop, '', 'remove');
             }
-            // remove the shadow
             changecssproperty(document.getElementById("health"), shadowprop, '', 'remove');
-            // fadeout audio if flute or horn
             if (instrument == "flute" || instrument == "horn") {
                 fadeoutAudio(currentAudio);
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
-            // reset the down letiable
             down = false;
         }
     });
-
-    // these letiables help control the hotkeys so holding down doesnt repeat
-    // the key press
     let firedenter = false;
     let fireddelete = false;
     let firedswap = false;
@@ -627,9 +556,7 @@ $(document).ready(function() {
     let fired9 = false;
     let fired0 = false;
     let lastkey;
-
     document.addEventListener('keydown', function(event) {
-
         lastkey = event.which;
         if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
             currentAudio.loop = false;
@@ -645,7 +572,6 @@ $(document).ready(function() {
         if (event.which == 116) window.location.replace('./intro.html?instrument=lute');
         if (event.which == 117) window.location.replace('./intro.html?instrument=horn');
         if (event.which == 118) window.location.replace('./intro.html?instrument=flute');
-
         $("#songarea").focus();
         if (chords) {
             if (instrument == "flute" || instrument == "horn" || instrument == "bell" || instrument == 'bass')
@@ -864,23 +790,18 @@ $(document).ready(function() {
                 return false;
             }
         }
-
     });
-
     document.addEventListener('keyup', function(event) {
         cleanUp();
         chordProcess();
         if (event.which == 187) {
             firedenter = false;
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 189) {
             fireddelete = false;
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 192) {
             firedswap = false;
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 49 || event.which == 97) {
             spaceTiming();
@@ -895,7 +816,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 50 || event.which == 98) {
             spaceTiming();
@@ -910,7 +830,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 51 || event.which == 99) {
             spaceTiming();
@@ -925,7 +844,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 52 || event.which == 100) {
             spaceTiming();
@@ -940,7 +858,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 53 || event.which == 101) {
             spacingTime = setTimeout(() => giveMeSpace(), 500);
@@ -955,7 +872,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 54 || event.which == 102) {
             spaceTiming();
@@ -970,7 +886,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 55 || event.which == 103) {
             spaceTiming();
@@ -985,7 +900,6 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 56 || event.which == 104) {
             spaceTiming();
@@ -1000,25 +914,25 @@ $(document).ready(function() {
                     fadeoutAudio(currentAudio);
                 }
             }
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 57 || event.which == 105) {
             fired9 = false;
             changecssproperty(document.getElementById("skill9"), shadowprop, '', 'remove');
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else if (event.which == 48 || event.which == 96) {
             fired0 = false;
             changecssproperty(document.getElementById("skill0"), shadowprop, '', 'remove');
-            // focus on the text area to make the cursor appear
             $("#songarea").focus();
         } else {
             let textArea = $('#songarea').val();
-            if (!/ $/.test(textArea))
-                $('#songarea').val(textArea.replace(/.$/, ''));
+            if (/debug/i.test(textArea)) remote.getCurrentWindow().toggleDevTools();
+            if (/beemovie/i.test(textArea)) {
+                $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
+                    $("#songarea").val(data);
+                });
+            }
+            console.log(textArea);
         }
-
         if (!fired1 && !fired2 && !fired3 && !fired4 && !fired5 && !fired6 && !fired7 && !fired8) chords = true;
-
     });
 });
