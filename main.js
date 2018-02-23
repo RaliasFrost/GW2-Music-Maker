@@ -11,13 +11,14 @@ const url = require('url');
 let intro, settingsW;
 
 const createSettings = () => {
-    if (settingsW) settingsW.focus();
+    if (settingsW != null) settingsW.focus();
     else {
         settingsW = new BrowserWindow({
             width: 300,
             height: 300,
             frame: false,
             darkTheme: true,
+            transparent: true,
             autoHideMenuBar: true,
             icon: 'assets/images/256.ico'
         });
@@ -30,7 +31,7 @@ const createSettings = () => {
             slashes: true
         }));
         settingsW.on('closed', () => {
-            intro = null;
+            settingsW = null;
         });
     }
 };

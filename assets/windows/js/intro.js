@@ -1,4 +1,3 @@
-
 console.log = function(x) {
     ipc.send('log', x);
 };

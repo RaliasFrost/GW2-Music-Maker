@@ -79,9 +79,17 @@
 
 <body>
     <div id="main" class="text">
+        <label for="checkbox-1" title="Enable or Disable the ability to delete or add any characters that isnt notes">Allow Editing</label>
+        <input type="checkbox" name="checkbox-1" id="checkbox-1">
         <textarea id="songarea" spellcheck="false"></textarea>
     </div>
 </body>
 <script>
+$(function() {
+    $("input").checkboxradio();
+});
+$(function() {
+    $(document).tooltip();
+});
 require('./js/intro.js');
 </script>

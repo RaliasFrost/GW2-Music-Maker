@@ -208,3 +208,34 @@ textarea:focus {
     right: 481px;
     background: url('../image/redbell.png') no-repeat;
 }
+
+.ui-corner-all {
+    border-radius: 0px !important;
+}
+
+label {
+    height: 15px;
+    position: absolute;
+    top: 470px;
+    left: 50px;
+}
+
+
+.ui-widget {
+    font-size: 10px !important;
+}
+
+.ui-button {
+    border-style: none !important;
+    color: white !important;
+    background: none !important;
+}
+
+.ui-button:focus {
+    outline: none !important;
+}
+
+.ui-icon-background,
+.ui-state-active .ui-icon-background {
+    background-color: rgb(226, 226, 226)!important;
+}

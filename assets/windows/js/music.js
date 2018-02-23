@@ -14,6 +14,7 @@ ipc.on('settingsChange', (event, arg) => {
 /******************************************************************************/
 let currentOctave = 1;
 let note = 'Hi';
+let areaPrev;
 let currentAudio = new Audio();
 let stopPlayback = false;
 let nowPlaying = false;
@@ -788,7 +789,13 @@ $(document).ready(function() {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
+            } else {
+                let textArea = $('#songarea').val();
+                if (!$('input[type=checkbox]').is(":checked")) {
+                    $('#songarea').val(areaPrev);
+                }
             }
+
         }
     });
     document.addEventListener('keyup', function(event) {
@@ -924,15 +931,21 @@ $(document).ready(function() {
             changecssproperty(document.getElementById("skill0"), shadowprop, '', 'remove');
             $("#songarea").focus();
         } else {
-            let textArea = $('#songarea').val();
-            if (/debug/i.test(textArea)) remote.getCurrentWindow().toggleDevTools();
-            if (/beemovie/i.test(textArea)) {
-                $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
-                    $("#songarea").val(data);
-                });
+            if ($('input[type=checkbox]').is(":checked")) {
+                let textArea = $('#songarea').val();
+                if (/debug/i.test(textArea)) remote.getCurrentWindow().toggleDevTools();
+                if (/beemovie/i.test(textArea)) {
+                    $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
+                        $("#songarea").val(data);
+                    });
+                }
+            } else {
+                let textArea = $('#songarea').val();
+                console.log(textArea);
+                if (!/ $/.test(textArea)) $('#songarea').val(textArea.replace(/.$/, ''));
             }
-            console.log(textArea);
         }
+        areaPrev = $('#songarea').val();
         if (!fired1 && !fired2 && !fired3 && !fired4 && !fired5 && !fired6 && !fired7 && !fired8) chords = true;
     });
 });
