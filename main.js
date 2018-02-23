@@ -7,7 +7,6 @@ const ipc = electron.ipcMain;
 
 const path = require('path');
 const url = require('url');
-//require('electron-reload')(__dirname);
 
 let intro, settingsW;
 
@@ -22,7 +21,6 @@ const createSettings = () => {
             autoHideMenuBar: true,
             icon: 'assets/images/256.ico'
         });
-        //intro.webContents.openDevTools();
         settingsW.setMenu(null);
         settingsW.setResizable(false);
         settingsW.loadURL(url.format({
@@ -46,7 +44,6 @@ const createWindow = () => {
         transparent: true,
         icon: 'assets/images/256.ico'
     });
-    //intro.webContents.openDevTools();
     intro.setMenu(null);
     intro.setResizable(false);
     intro.loadURL(url.format({
