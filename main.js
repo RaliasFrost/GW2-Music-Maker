@@ -37,6 +37,7 @@ const createSettings = () => {
     }
 };
 
+
 const createWindow = () => {
     intro = new BrowserWindow({
         width: 820,
