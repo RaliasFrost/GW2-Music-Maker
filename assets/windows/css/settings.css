@@ -1,5 +1,5 @@
 body {
-    background-color: #2C2F33;
+    background-color: #464646;
     opacity: 0.1 color: white;
     overflow-y: hidden;
     overflow-x: hidden;
@@ -21,28 +21,6 @@ a {
     padding-left: 10px;
 }
 
-#time {
-    float: right;
-    padding-right: 10px;
-}
-
-#art {
-    height: 60px;
-    width: 60px;
-    float: left;
-}
-
-#musicbar {
-    background: #36393E;
-    height: 60px;
-    position: fixed;
-    top: 40px;
-    right: 0px;
-    width: 100%;
-    clear: both;
-}
-
-
 
 #settings {
     padding: 3px;
@@ -62,7 +40,7 @@ a {
 #topBar {
     position: fixed;
     -webkit-app-region: drag;
-    background-color: #23272A;
+    background-color: #2C2D2D;
     color: gray;
     width: 100%;
     top: 0px;

@@ -6,7 +6,7 @@ const ipc = electron.ipcMain;
 
 const path = require('path');
 const url = require('url');
-//require('electron-reload')(__dirname);
+require('electron-reload')(__dirname);
 
 let intro, settingsW;
 

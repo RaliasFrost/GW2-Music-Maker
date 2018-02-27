@@ -22,5 +22,15 @@
 <body>
 </body>
 <script>
+$(function() {
+    $(".widget input[type=submit], .widget a, .widget button").button();
+
+});
+$(function() {
+    $("input").checkboxradio();
+});
+$(function() {
+    $(document).tooltip();
+});
 require('./js/settings.js');
 </script>

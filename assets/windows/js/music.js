@@ -8,27 +8,33 @@ const {
 ipc.on('settingsChange', (event, arg) => {
     console.log(arg);
 });
-
 /******************************************************************************/
 /* Global letiables                                                           */
 /******************************************************************************/
+const gS = item => {
+    return localStorage.getItem(item);
+};
+const sS = (item, value) => {
+    return localStorage.setItem(item, value);
+};
+if (!gS("chordMode")) sS("chordMode", 1);
+if (!gS("global_volume")) sS("global_volume", 50);
+if (!gS("spaceDelay")) sS("spaceDelay", 100);
+if (!gS("autoSpace")) sS("autoSpace", 1);
+
+let settings = {
+    chordMode: gS("chordMode"),
+    global_volume: gS("global_volume"),
+    spaceDelay: gS("spaceDelay"),
+    autoSpace: gS("autoSpace")
+};
+
 let currentOctave = 1;
 let note = 'Hi';
 let areaPrev;
 let currentAudio = new Audio();
-let stopPlayback = false;
-let nowPlaying = false;
-let nowPlayingID = 0;
-let commentSongID = 0;
-let combatMode = 1;
-let chordMode = 0;
-let chordArray = [];
-let global_tempo = 90;
-let global_meter = 4;
-let global_volume = 30;
 let numerator = 1;
 let denominator = 1;
-let hotkeys = true;
 let shadowprop = getsupportedprop(['boxShadow',
     'mozBoxShadow',
     'webkitBoxShadow'
@@ -42,11 +48,8 @@ let transformprop = getsupportedprop(['webkitTransform',
 let shadowvalue = '0 0 15px 10px #000000 inset';
 let transformvalue1 = 'rotateX(90deg)';
 let transformvalue2 = 'rotateX(0deg)';
-let addCommentClicked = false;
 let instrument = null;
-let keysSinceOChange = [];
 let keys = [];
-
 /******************************************************************************/
 /* Functions                                                                  */
 /******************************************************************************/
@@ -61,7 +64,8 @@ let octaveChenged = true;
 const chordProcess = () => {
     let textValue = $('#songarea').val();
     let chordRegex = new RegExp(keys.join('') + '$');
-    $('#songarea').val(textValue.replace(chordRegex, keys.join('/')));
+    if (settings.chordMode)
+        $('#songarea').val(textValue.replace(chordRegex, keys.join('/')));
     keys = [];
 };
 /**
@@ -94,11 +98,11 @@ const processTab = (data) => {
                 }
                 break;
             case 1:
-                if (data.pOctave == 0 && !/\[$/.test(textValue)) {
+                if (data.pOctave === 0 && !/\[$/.test(textValue)) {
                     $('#songarea').val(textValue.replace(/ $/, '') + ']');
                     octaveChenged = true;
                     spaceTiming();
-                } else if (data.pOctave == 0 && /\[$/.test(textValue)) {
+                } else if (data.pOctave === 0 && /\[$/.test(textValue)) {
                     $('#songarea').val(textValue.slice(0, -1));
                 } else if (data.pOctave == 2 && !/\($/.test(textValue)) {
                     $('#songarea').val(textValue.replace(/ $/, '') + ')');
@@ -136,12 +140,10 @@ const getUrlParameter = (sParam) => {
         }
     }
 };
-
 instrument = getUrlParameter('instrument');
 // $('#title').innerHtml(`GW2mm - ${instrument}`);
 console.log("instrument: " + instrument);
 if (!instrument) window.location.replace('./intro.html?instrument=harp');
-
 Array.prototype.pushIfNotExist = function(element) {
     if (jQuery.inArray(element, this) == -1) {
         this.push(element);
@@ -162,14 +164,12 @@ Array.prototype.pushIfNotExist = function(element) {
         });
     }
 };
-
 Array.prototype.removeValue = function(element) {
     let index = this.indexOf(element);
     if (index > -1) {
         this.splice(index, 1);
     }
 };
-
 /*
     These following functions I didn't make, and haven't bothered readting through yet and optimizing what I do need and trimming what I don't
  */
@@ -180,10 +180,6 @@ const reduce = (num, den) => {
     gcd = gcd(num, den);
     return [num / gcd, den / gcd];
 };
-
-const stripchars = (string, chars) => {
-    return string.replace(RegExp('[' + chars + ']', 'g'), '');
-}
 
 function getsupportedprop(proparray) {
     let root = document.documentElement;
@@ -200,31 +196,6 @@ function changecssproperty(target, prop, value, action) {
     }
 }
 
-function swap() {
-    if ($('#centerskillbackground').css('opacity') == 0) {
-        stopPlayback = true;
-        $("#centerskillbackground").css("opacity", 1);
-        $("#nextnotelength").css("opacity", 1);
-        $("#options").css("opacity", 1);
-        $("#blockui1").css("display", "none");
-        $("#blockui2").css("display", "none");
-        combatMode = 1;
-    } else {
-        $("#centerskillbackground").css("opacity", 0);
-        $("#nextnotelength").css("opacity", 0);
-        $("#options").css("opacity", 0);
-        $("#blockui1").css("display", "block");
-        $("#blockui2").css("display", "block");
-        chordArray = [];
-        setTimeout(function() {
-            $("#chord").val("Enable Chord Mode");
-            $("#currentNotesInChord").html("");
-        }, 500);
-        combatMode = 0;
-        chordMode = 0;
-    }
-}
-
 function fadeoutAudio(tempAudio) {
     $(tempAudio).animate({
         volume: 0
@@ -233,7 +204,6 @@ function fadeoutAudio(tempAudio) {
         tempAudio.pause();
     }, 500);
 }
-
 /**
  * This is a heavily optimised bit of code i borrowed from GW2mb.com, it use to be much longer, but now it is much better thanks to the use of string templates
  * @param  {string} skill_id The ID for the current skill being pressed
@@ -268,59 +238,24 @@ const getSoundFileFromSkillId = (skill_id) => {
             break;
     }
     return return_soundfile;
-}
+};
 
 function skill(skill_id) {
     let return_string;
     let num_den = reduce(numerator, denominator);
     currentAudio = new Audio(getSoundFileFromSkillId(skill_id));
-    currentAudio.volume = (global_volume / 100);
+    currentAudio.volume = (settings.global_volume / 100);
     changecssproperty(document.getElementById(skill_id), shadowprop, shadowvalue);
-    if (chordMode == 0) {
-        if (instrument == "flute" || instrument == "horn") {
-            currentAudio.volume = 0;
-            currentAudio.play();
-            $(currentAudio).animate({
-                volume: (global_volume / 100)
-            }, 100);
-        } else {
-            currentAudio.play();
-        }
+    if (instrument == "flute" || instrument == "horn") {
+        currentAudio.volume = 0;
+        currentAudio.play();
+        $(currentAudio).animate({
+            volume: (settings.global_volume / 100)
+        }, 100);
     } else {
-        if (jQuery.inArray(note, chordArray) == -1) {
-            chordArray.pushIfNotExist(note);
-            return_string = "";
-            for (let i = 0; i < chordArray.length; i++) {
-                return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
-            }
-            $("#currentNotesInChord").html(return_string);
-            if (instrument == "flute" || instrument == "horn") {
-                currentAudio.volume = 0;
-                currentAudio.play();
-                $(currentAudio).animate({
-                    volume: (global_volume / 100)
-                }, 100);
-            } else {
-                currentAudio.play();
-            }
-        } else {
-            chordArray.removeValue(note);
-            return_string = "";
-            for (let i = 0; i < chordArray.length; i++) {
-                return_string += "<span class=\"chordArrayMember\" onclick=\"removeChordArrayMember('" + addslashes(chordArray[i]) + "');\">" + chordArray[i] + "</span>";
-            }
-            $("#currentNotesInChord").html(return_string);
-        }
+        currentAudio.play();
     }
-    if (num_den[0] == num_den[1]) {
-        note = note + " ";
-    } else if (num_den[1] == 1) {
-        note = note + num_den[0] + " ";
-    } else if (num_den[0] == 1) {
-        note = note + "/" + num_den[1] + " ";
-    } else {
-        note = note + num_den[0] + "/" + num_den[1] + " ";
-    }
+
     throw "Musical Note";
 }
 
@@ -443,7 +378,7 @@ function octave_up() {
             }, 250);
         }
     } else if (instrument != 'flute') {
-        if (currentOctave == 0) {
+        if (currentOctave === 0) {
             currentOctave = 1;
             changecssproperty(document.getElementById("skill0"), shadowprop, shadowvalue);
             let all = document.getElementsByClassName('skill');
@@ -477,35 +412,17 @@ function octave_up() {
 let spacingTime;
 const spaceTiming = () => {
     window.clearTimeout(spacingTime);
-    spacingTime = setTimeout(() => giveMeSpace(), 100);
+    spacingTime = setTimeout(() => giveMeSpace(), settings.spaceDelay);
 };
 const giveMeSpace = () => {
     let textArea = $('#songarea').val();
-    $('#songarea').val(textArea + ' ');
+    if (settings.autoSpace)
+        $('#songarea').val(textArea + ' ');
 };
 let chords = true;
-let instrumentCheck = () => {
-    switch (instrument) {
-        case 'flute':
-            if (chords) chords = false;
-            else chords = true;
-            break;
-        case 'bell':
-            if (chords) chords = false;
-            else chords = true;
-            break;
-        case 'horn':
-            if (chords) chords = false;
-            else chords = true;
-            break;
-        default:
-            return;
-    }
-};
 /******************************************************************************/
 /* Functions Executed on Page Load                                            */
 /******************************************************************************/
-let resetInterval;
 $(document).ready(function() {
     if (instrument == 'flute') document.getElementById("skill0").style.backgroundImage = "url('image/stop.png')";
     if (instrument == 'flute') document.getElementById("skill9").style.backgroundImage = "url('image/octave_up.png')";
@@ -790,15 +707,15 @@ $(document).ready(function() {
                 event.stopPropagation();
                 return false;
             } else {
-                let textArea = $('#songarea').val();
                 if (!$('input[type=checkbox]').is(":checked")) {
                     $('#songarea').val(areaPrev);
                 }
             }
-
         }
     });
     document.addEventListener('keyup', function(event) {
+        let textArea = $('#songarea').val();
+        console.log(textArea);
         cleanUp();
         chordProcess();
         if (event.which == 187) {
@@ -940,8 +857,6 @@ $(document).ready(function() {
                     });
                 }
             } else {
-                let textArea = $('#songarea').val();
-                console.log(textArea);
                 if (!/ $/.test(textArea)) $('#songarea').val(textArea.replace(/.$/, ''));
             }
         }
