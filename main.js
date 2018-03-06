@@ -6,7 +6,8 @@ const ipc = electron.ipcMain;
 
 const path = require('path');
 const url = require('url');
-require('electron-reload')(__dirname);
+let debug = false
+//require('electron-reload')(__dirname);
 
 let intro, settingsW;
 
@@ -22,7 +23,7 @@ const createSettings = () => {
             autoHideMenuBar: true,
             icon: 'assets/images/256.ico'
         });
-        //intro.webContents.openDevTools();
+        if (debug) settingsW.webContents.openDevTools();
         settingsW.setMenu(null);
         settingsW.setResizable(false);
         settingsW.loadURL(url.format({
@@ -46,7 +47,7 @@ const createWindow = () => {
         transparent: true,
         icon: 'assets/images/256.ico'
     });
-    //intro.webContents.openDevTools();
+    if (debug) intro.webContents.openDevTools();
     intro.setMenu(null);
     intro.setResizable(false);
     intro.loadURL(url.format({
@@ -64,9 +65,14 @@ ipc.on('settingsWindow', (e, a) => {
     if (a == 'open') createSettings();
 });
 
-ipc.on('musicData', function(event, arg) {
-    event.sender.send('musicData', 'pong');
-    console.log(arg);
+ipc.on('settingsChange', function(event, arg) {
+    intro.send('settingsChange', arg);
+});
+
+ipc.on('debug', function(event, arg) {
+    debug = true;
+    intro.webContents.openDevTools();
+    settingsW.webContents.openDevTools();
 });
 
 

@@ -13,6 +13,7 @@ ipc.on('musicData', function(event, arg) {
 
 document.getElementById('close').addEventListener('click', (event) => {
     remote.getCurrentWindow().close();
+    localStorage.setItem("retainedData", $("#songarea").val());
 });
 
 document.getElementById('minimize').addEventListener('click', (event) => {
@@ -21,5 +22,4 @@ document.getElementById('minimize').addEventListener('click', (event) => {
 
 document.getElementById('settings').addEventListener('click', (event) => {
     ipc.send('settingsWindow', 'open');
-    remote.settingsWindow();
 });

@@ -1,8 +1,10 @@
 body {
     background-color: #464646;
     opacity: 0.1 color: white;
-    overflow-y: hidden;
-    overflow-x: hidden;
+}
+
+#bodyMain {
+    padding-top: 30px
 }
 
 a {
@@ -120,85 +122,65 @@ html {
     overflow: none;
 }
 
-textarea {
-    position: absolute;
-    width: 80%;
-    border: none;
-    padding: 5px;
-    top: 300px;
-    left: 9%;
-    resize: none;
-    color: white;
-    background-color: #23272A;
-    font-family: Tahoma, sans-serif;
-    background-position: bottom right;
-    background-repeat: no-repeat;
-    box-shadow: 3px 3px 3px #2A2D2F inset;
-    height: 200px;
-}
-
-textarea:focus {
-    outline: none;
-}
-
-.instrument {
-    display: inline-block;
-    height: 64px;
-    width: 64px;
-    margin-right: 5px;
+#volume {
+    color: white !important;
+    width: 80px !important;
     margin-top: 10px;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
+    margin-left: 14px;
 }
 
-#bell {
-    position: absolute;
-    top: 30px;
-    right: 561px;
-    background: url('../image/bell.png') no-repeat;
+#spaceLabel {
+    color: white !important;
+    width: 80px !important;
+    margin-top: 10px;
+    margin-left: 14px;
+    width: 40px;
 }
 
-#harp {
-    position: absolute;
-    top: 30px;
-    right: 641px;
-    background: url('../image/harp.png') no-repeat;
+#spaceDelay {
+    width: 60px;
 }
 
-#flute {
-    position: absolute;
-    top: 30px;
-    right: 161px;
-    background: url('../image/flute.png') no-repeat;
+.volume {
+    color: white !important;
+    margin-top: 10px;
+    margin-left: 14px;
 }
 
-#bass {
-    position: absolute;
-    top: 30px;
-    right: 401px;
-    background: url('../image/bass.png') no-repeat;
+.ui-widget {
+    font-size: 10px !important;
 }
 
-#horn {
-    position: absolute;
-    top: 30px;
-    right: 241px;
-    background: url('../image/horn.png') no-repeat;
+.ui-button {
+    border-style: none !important;
+    color: white !important;
+    background: none !important;
 }
 
-#lute {
-    position: absolute;
-    top: 30px;
-    right: 321px;
-    background: url('../image/lute.png') no-repeat;
+.ui-button:focus {
+    outline: none !important;
 }
 
-#redbell {
-    position: absolute;
-    top: 30px;
-    right: 481px;
-    background: url('../image/redbell.png') no-repeat;
+.ui-icon-background,
+.ui-state-active .ui-icon-background {
+    background-color: rgb(226, 226, 226)!important;
+}
+
+.ui-corner-all {
+    border-radius: 0px !important;
+}
+
+.ui-spinner-input {
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0 !important;
+    margin: 0 !important;
+    vertical-align: middle;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.ui-spinner-input:focus {
+    outline: none;
 }

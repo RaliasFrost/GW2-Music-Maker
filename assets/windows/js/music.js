@@ -6,27 +6,35 @@ const {
     remote
 } = require('electron');
 ipc.on('settingsChange', (event, arg) => {
-    console.log(arg);
+    settings[arg.name] = arg.val
 });
 /******************************************************************************/
 /* Global letiables                                                           */
 /******************************************************************************/
 const gS = item => {
-    return localStorage.getItem(item);
+    let val = localStorage.getItem(item);
+    return isNaN(val) ? val : Number(val);
 };
 const sS = (item, value) => {
+    console.log("Changeing a Value")
+    console.log(item, value)
     return localStorage.setItem(item, value);
 };
-if (!gS("chordMode")) sS("chordMode", 1);
-if (!gS("global_volume")) sS("global_volume", 50);
-if (!gS("spaceDelay")) sS("spaceDelay", 100);
-if (!gS("autoSpace")) sS("autoSpace", 1);
+if (gS("chordMode") == null) sS("chordMode", 1);
+if (gS("global_volume") == null) sS("global_volume", 50);
+if (gS("spaceDelay") == null) sS("spaceDelay", 100);
+if (gS("autoSpace") == null) sS("autoSpace", 1);
+if (gS("editMode") == null) sS("editMode", 0);
+if (gS("retain") == null) sS("retain", 1);
+
 
 let settings = {
     chordMode: gS("chordMode"),
     global_volume: gS("global_volume"),
     spaceDelay: gS("spaceDelay"),
-    autoSpace: gS("autoSpace")
+    autoSpace: gS("autoSpace"),
+    editMode: gS("editMode"),
+    retain: gS("retain")
 };
 
 let currentOctave = 1;
@@ -416,6 +424,7 @@ const spaceTiming = () => {
 };
 const giveMeSpace = () => {
     let textArea = $('#songarea').val();
+    console.log(settings.autoSpace)
     if (settings.autoSpace)
         $('#songarea').val(textArea + ' ');
 };
@@ -436,6 +445,10 @@ $(document).ready(function() {
         octave_down();
         down = true;
     });
+    if (settings.retain) $('#songarea').val(gS('retainedData'));
+
+    if (settings.editMode == 1) $('#edit').attr('checked', true);
+
     /*
     $("#skill9_flute").mousedown(function() {
     octave_down();
@@ -474,7 +487,21 @@ $(document).ready(function() {
     let fired9 = false;
     let fired0 = false;
     let lastkey;
+
+
+    $('#edit').bind('change', function() {
+        if ($(this).is(':checked')) {
+            sS('editMode', 1);
+        } else {
+            sS('editMode', 0);
+        }
+    });
+
+
     document.addEventListener('keydown', function(event) {
+        let notecount = $("#songarea").val().match(/(\d)/g);
+        console.log(notecount)
+        $("#healthtext").text(notecount.length);
         lastkey = event.which;
         if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
             currentAudio.loop = false;
@@ -482,14 +509,36 @@ $(document).ready(function() {
                 fadeoutAudio(currentAudio);
             }
         }
+
         cleanUp();
-        if (event.which == 112) window.location.replace('./intro.html?instrument=harp');
-        if (event.which == 113) window.location.replace('./intro.html?instrument=bell');
-        if (event.which == 114) window.location.replace('./intro.html?instrument=redbell');
-        if (event.which == 115) window.location.replace('./intro.html?instrument=bass');
-        if (event.which == 116) window.location.replace('./intro.html?instrument=lute');
-        if (event.which == 117) window.location.replace('./intro.html?instrument=horn');
-        if (event.which == 118) window.location.replace('./intro.html?instrument=flute');
+        if (event.which == 112) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=harp');
+        }
+        if (event.which == 113) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=bell');
+        }
+        if (event.which == 114) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=redbell');
+        }
+        if (event.which == 115) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=bass');
+        }
+        if (event.which == 116) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=lute');
+        }
+        if (event.which == 117) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=horn');
+        }
+        if (event.which == 118) {
+            sS("retainedData", $("#songarea").val());
+            window.location.replace('./intro.html?instrument=flute');
+        }
         $("#songarea").focus();
         if (chords) {
             if (instrument == "flute" || instrument == "horn" || instrument == "bell" || instrument == 'bass')
@@ -713,6 +762,7 @@ $(document).ready(function() {
             }
         }
     });
+
     document.addEventListener('keyup', function(event) {
         let textArea = $('#songarea').val();
         console.log(textArea);
@@ -850,11 +900,17 @@ $(document).ready(function() {
         } else {
             if ($('input[type=checkbox]').is(":checked")) {
                 let textArea = $('#songarea').val();
-                if (/debug/i.test(textArea)) remote.getCurrentWindow().toggleDevTools();
-                if (/beemovie/i.test(textArea)) {
+                if (/debug/i.test(textArea)) {
+                    ipc.send("debug", null)
+                    $('#songarea').val("");
+                } else if (/beemovie/i.test(textArea)) {
                     $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
                         $("#songarea").val(data);
                     });
+                } else if (/(?:gS\(["'])((.)*)(?:['"]\))/i.test(textArea)) {
+                    let match = textArea.match(/(?:gS\(["'])((.)*)(?:['"]\))/i)
+                    console.log(eval(gS(match[1])))
+                    $('#songarea').val(`Value: ${eval(gS(match[1]))}`);
                 }
             } else {
                 if (!/ $/.test(textArea)) $('#songarea').val(textArea.replace(/.$/, ''));
