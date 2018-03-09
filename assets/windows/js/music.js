@@ -6,7 +6,7 @@ const {
     remote
 } = require('electron');
 ipc.on('settingsChange', (event, arg) => {
-    settings[arg.name] = arg.val
+    settings[arg.name] = arg.val;
 });
 /******************************************************************************/
 /* Global letiables                                                           */
@@ -16,8 +16,8 @@ const gS = item => {
     return isNaN(val) ? val : Number(val);
 };
 const sS = (item, value) => {
-    console.log("Changeing a Value")
-    console.log(item, value)
+    console.log("Changeing a Value");
+    console.log(item, value);
     return localStorage.setItem(item, value);
 };
 if (gS("chordMode") == null) sS("chordMode", 1);
@@ -41,8 +41,6 @@ let currentOctave = 1;
 let note = 'Hi';
 let areaPrev;
 let currentAudio = new Audio();
-let numerator = 1;
-let denominator = 1;
 let shadowprop = getsupportedprop(['boxShadow',
     'mozBoxShadow',
     'webkitBoxShadow'
@@ -152,26 +150,7 @@ instrument = getUrlParameter('instrument');
 // $('#title').innerHtml(`GW2mm - ${instrument}`);
 console.log("instrument: " + instrument);
 if (!instrument) window.location.replace('./intro.html?instrument=harp');
-Array.prototype.pushIfNotExist = function(element) {
-    if (jQuery.inArray(element, this) == -1) {
-        this.push(element);
-        this.sort(function(a, b) {
-            let keyA = getKeyOctaveFromPitch(a, 0, location.pathname);
-            let keyB = getKeyOctaveFromPitch(b, 0, location.pathname);
-            if (keyA[1] > keyB[1]) {
-                return 1;
-            } else if (keyA[1] < keyB[1]) {
-                return -1;
-            } else if (keyA[0] > keyB[0]) {
-                return 1;
-            } else if (keyA[0] < keyB[0]) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-    }
-};
+
 Array.prototype.removeValue = function(element) {
     let index = this.indexOf(element);
     if (index > -1) {
@@ -181,13 +160,6 @@ Array.prototype.removeValue = function(element) {
 /*
     These following functions I didn't make, and haven't bothered readting through yet and optimizing what I do need and trimming what I don't
  */
-const reduce = (num, den) => {
-    let gcd = function gcd(a, b) {
-        return b ? gcd(b, a % b) : a;
-    };
-    gcd = gcd(num, den);
-    return [num / gcd, den / gcd];
-};
 
 function getsupportedprop(proparray) {
     let root = document.documentElement;
@@ -249,8 +221,6 @@ const getSoundFileFromSkillId = (skill_id) => {
 };
 
 function skill(skill_id) {
-    let return_string;
-    let num_den = reduce(numerator, denominator);
     currentAudio = new Audio(getSoundFileFromSkillId(skill_id));
     currentAudio.volume = (settings.global_volume / 100);
     changecssproperty(document.getElementById(skill_id), shadowprop, shadowvalue);
@@ -424,7 +394,7 @@ const spaceTiming = () => {
 };
 const giveMeSpace = () => {
     let textArea = $('#songarea').val();
-    console.log(settings.autoSpace)
+    console.log(settings.autoSpace);
     if (settings.autoSpace)
         $('#songarea').val(textArea + ' ');
 };
@@ -500,7 +470,7 @@ $(document).ready(function() {
 
     document.addEventListener('keydown', function(event) {
         let notecount = $("#songarea").val().match(/(\d)/g);
-        console.log(notecount)
+        console.log(notecount);
         $("#healthtext").text(notecount.length);
         lastkey = event.which;
         if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
@@ -901,15 +871,15 @@ $(document).ready(function() {
             if ($('input[type=checkbox]').is(":checked")) {
                 let textArea = $('#songarea').val();
                 if (/debug/i.test(textArea)) {
-                    ipc.send("debug", null)
+                    ipc.send("debug", null);
                     $('#songarea').val("");
                 } else if (/beemovie/i.test(textArea)) {
                     $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
                         $("#songarea").val(data);
                     });
                 } else if (/(?:gS\(["'])((.)*)(?:['"]\))/i.test(textArea)) {
-                    let match = textArea.match(/(?:gS\(["'])((.)*)(?:['"]\))/i)
-                    console.log(eval(gS(match[1])))
+                    let match = textArea.match(/(?:gS\(["'])((.)*)(?:['"]\))/i);
+                    console.log(eval(gS(match[1])));
                     $('#songarea').val(`Value: ${eval(gS(match[1]))}`);
                 }
             } else {

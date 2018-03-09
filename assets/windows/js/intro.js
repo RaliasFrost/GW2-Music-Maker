@@ -1,3 +1,5 @@
+const ipc = require('electron').ipcRenderer;
+
 console.log = function(x) {
     ipc.send('log', x);
 };
@@ -11,15 +13,15 @@ ipc.on('musicData', function(event, arg) {
 });
 
 
-document.getElementById('close').addEventListener('click', (event) => {
+document.getElementById('close').addEventListener('click', () => {
     remote.getCurrentWindow().close();
     localStorage.setItem("retainedData", $("#songarea").val());
 });
 
-document.getElementById('minimize').addEventListener('click', (event) => {
+document.getElementById('minimize').addEventListener('click', () => {
     remote.getCurrentWindow().minimize();
 });
 
-document.getElementById('settings').addEventListener('click', (event) => {
+document.getElementById('settings').addEventListener('click', () => {
     ipc.send('settingsWindow', 'open');
 });

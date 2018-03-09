@@ -6,7 +6,7 @@ const ipc = electron.ipcMain;
 
 const path = require('path');
 const url = require('url');
-let debug = false
+let debug = false;
 //require('electron-reload')(__dirname);
 
 let intro, settingsW;
@@ -70,7 +70,7 @@ ipc.on('settingsChange', function(event, arg) {
     intro.send('settingsChange', arg);
 });
 
-ipc.on('debug', function(event, arg) {
+ipc.on('debug', () => {
     debug = true;
     intro.webContents.openDevTools();
     settingsW.webContents.openDevTools();

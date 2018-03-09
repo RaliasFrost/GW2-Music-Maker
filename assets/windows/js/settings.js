@@ -33,15 +33,15 @@ ipc.on('musicData', function(event, arg) {
 });
 localStorage.setItem("myCat", "Scratchy");
 
-document.getElementById('close').addEventListener('click', (event) => {
+document.getElementById('close').addEventListener('click', () => {
     remote.getCurrentWindow().close();
 });
 
-document.getElementById('minimize').addEventListener('click', (event) => {
+document.getElementById('minimize').addEventListener('click', () => {
     remote.getCurrentWindow().minimize();
 });
 
-$("button, input, a").click(function(event) {
+$("button, input, a").click(function() {
     ipc.send("settingsChange", Date.now());
 });
 
@@ -61,7 +61,7 @@ $('#retain').bind('change', function() {
         sS('retain', 0);
     }
 });
-$("#vol").text(settings.global_volume)
+$("#vol").text(settings.global_volume);
 
 
 $(function() {
@@ -77,7 +77,7 @@ $(function() {
         value: settings.global_volume,
         slide: function(event, ui) {
             $("#vol").text(ui.value);
-            sS('global_volume', ui.value)
+            sS('global_volume', ui.value);
         }
     });
     $("#volume").width(25);
@@ -85,13 +85,13 @@ $(function() {
         min: 0,
         value: settings.spaceDelay,
         max: 10000,
-        change: function(a) {
-            sS('spaceDelay', $("#spaceDelay").spinner('value'))
+        change: () => {
+            sS('spaceDelay', $("#spaceDelay").spinner('value'));
         }
     });
 
-    $("#spaceDelay").spinner("value", settings.spaceDelay)
-    if (settings.autoSpace == 1) {
+    spinner.spinner("value", settings.spaceDelay);
+    if (settings.autoSpace === 1) {
         $('#spaceDelay').spinner('enable');
     } else $('#spaceDelay').spinner('disable');
 
