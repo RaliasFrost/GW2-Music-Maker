@@ -62,13 +62,22 @@ $('#retain').bind('change', function() {
     }
 });
 $("#vol").text(settings.global_volume);
-
+if (gS('default_export_path'))
+    $('#exportPath').text(gS('default_export_path'));
 
 $(function() {
+    $("input:file").change(function() {
+        $("#exportPath").text(document.getElementById('ctrl').files[0].path.substring(0, 35));
+        sS('default_export_path', document.getElementById('ctrl').files[0].path);
+    });
     $(".checkbox").checkboxradio();
 
 
-    $(document).tooltip();
+    $(document).tooltip({
+        classes: {
+            "ui-tooltip": "highlight"
+        }
+    });
 
 
     $("#volume").slider({
@@ -91,7 +100,7 @@ $(function() {
     });
 
     spinner.spinner("value", settings.spaceDelay);
-    if (settings.autoSpace === 1) {
+    if (settings.autoSpace == 1) {
         $('#spaceDelay').spinner('enable');
     } else $('#spaceDelay').spinner('disable');
 

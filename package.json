@@ -4,11 +4,11 @@
   "description": " A tool that can be used to create music sheets for Guild Wars Two Musical instruments ",
   "main": "main.js",
   "dependencies": {
-    "electron": "^1.8.2",
-    "moment": ">=2.13.0"
+    "electron": "^1.8.4",
+    "moment": "^2.21.0"
   },
   "devDependencies": {
-    "electron-packager": "^11.0.1",
+    "electron-packager": "^11.2.0",
     "electron-reload": ">=1.2.2"
   },
   "scripts": {

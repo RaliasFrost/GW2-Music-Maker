@@ -87,6 +87,12 @@
 </body>
 <script>
 $(function() { $("input").checkboxradio(); });
-$(function() { $(document).tooltip(); });
+$(function() {
+    $(document).tooltip({
+        classes: {
+            "ui-tooltip": "highlight"
+        }
+    });
+});
 require('./js/intro.js');
 </script>

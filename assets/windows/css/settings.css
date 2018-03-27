@@ -184,3 +184,21 @@ html {
 .ui-spinner-input:focus {
     outline: none;
 }
+
+textarea {
+    border: none;
+    resize: none;
+    height: 15px;
+    overflow: none;
+    font-family: Tahoma, sans-serif;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.export {
+    color: white;
+    margin-left: 14px;
+    padding-top: 5px;
+}

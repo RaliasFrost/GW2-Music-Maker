@@ -25,11 +25,15 @@
         <label for="aSpace" title="Enable or Disable the automatic insertion of spaces in the tab">Enable Automatic Spacing</label>
         <input type="checkbox" name="aSpace" id="aSpace" class="checkbox">
         <br>
-        <label for="spaceDelay" id="spaceLabel">Delay:</label>
-        <input id="spaceDelay" name="value">
+        <label for="spaceDelay" id="spaceLabel" title="Delay before a space is added (in miliseconds)">Delay:</label>
+        <input id="spaceDelay" name="value" title="Delay before a space is added (in miliseconds)">
         <br>
+        <div class=volume>Volume: <span id=vol>0</span></div>
         <div class="volume" id="volume"></div>
-        <div class=volume>Default Volume: <span id=vol>0</span></div>
+        <div id="export" class="export" title="Path to export files to">Default Export Path</div>
+        <div id='exportPath' class="export"></div>
+        <input type="file" id="ctrl" class="export" webkitdirectory directory/>
+    </div>
     </div>
 </body>
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">

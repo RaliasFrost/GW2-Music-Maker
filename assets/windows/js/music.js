@@ -394,10 +394,16 @@ const spaceTiming = () => {
 };
 const giveMeSpace = () => {
     let textArea = $('#songarea').val();
-    console.log(settings.autoSpace);
     if (settings.autoSpace)
         $('#songarea').val(textArea + ' ');
 };
+
+const loadINS = ins => {
+    console.log(ins)
+    sS("retainedData", $("#songarea").val());
+    window.location.replace(`./intro.html?instrument=${ins}`);
+}
+
 let chords = true;
 /******************************************************************************/
 /* Functions Executed on Page Load                                            */
@@ -469,9 +475,6 @@ $(document).ready(function() {
 
 
     document.addEventListener('keydown', function(event) {
-        let notecount = $("#songarea").val().match(/(\d)/g);
-        console.log(notecount);
-        $("#healthtext").text(notecount.length);
         lastkey = event.which;
         if (instrument == "flute" || instrument == "horn" || instrument == "bass") {
             currentAudio.loop = false;
@@ -481,34 +484,13 @@ $(document).ready(function() {
         }
 
         cleanUp();
-        if (event.which == 112) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=harp');
-        }
-        if (event.which == 113) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=bell');
-        }
-        if (event.which == 114) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=redbell');
-        }
-        if (event.which == 115) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=bass');
-        }
-        if (event.which == 116) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=lute');
-        }
-        if (event.which == 117) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=horn');
-        }
-        if (event.which == 118) {
-            sS("retainedData", $("#songarea").val());
-            window.location.replace('./intro.html?instrument=flute');
-        }
+        if (event.which == 112) loadINS('harp');
+        if (event.which == 113) loadINS('bell');
+        if (event.which == 114) loadINS('redbell');
+        if (event.which == 115) loadINS('bass');
+        if (event.which == 116) loadINS('lute');
+        if (event.which == 117) loadINS('horn');
+        if (event.which == 118) loadINS('flute');
         $("#songarea").focus();
         if (chords) {
             if (instrument == "flute" || instrument == "horn" || instrument == "bell" || instrument == 'bass')
@@ -734,8 +716,16 @@ $(document).ready(function() {
     });
 
     document.addEventListener('keyup', function(event) {
+        let notecount = $("#songarea").val().match(/(\d)/g);
+        if (notecount != null) {
+            console.log(notecount.length)
+            console.log(notecount)
+            if (event.which == 8) $("#healthtext").text(notecount.length);
+        } else $("#healthtext").text(0);
+        if (notecount != null)
+            $("#healthtext").text(notecount.length);
+        else $("#healthtext").text(1);
         let textArea = $('#songarea').val();
-        console.log(textArea);
         cleanUp();
         chordProcess();
         if (event.which == 187) {

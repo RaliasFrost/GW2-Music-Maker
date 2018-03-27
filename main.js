@@ -7,9 +7,17 @@ const ipc = electron.ipcMain;
 const path = require('path');
 const url = require('url');
 let debug = false;
-//require('electron-reload')(__dirname);
+require('electron-reload')(__dirname);
 
 let intro, settingsW;
+
+const dialog = electron.dialog;
+
+exports.selectDirectory = () => {
+    dialog.showOpenDialog(settingsW, {
+        properties: ['openDirectory']
+    });
+};
 
 const createSettings = () => {
     if (settingsW != null) settingsW.focus();
