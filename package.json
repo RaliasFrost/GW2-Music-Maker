@@ -5,7 +5,9 @@
   "main": "main.js",
   "dependencies": {
     "electron": "^1.8.4",
-    "moment": "^2.21.0"
+    "moment": "^2.21.0",
+    "node-rsa": "^0.4.2",
+    "ws": "^5.1.1"
   },
   "devDependencies": {
     "electron-packager": "^11.2.0",

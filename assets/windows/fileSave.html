@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title id="title">GW2 Tabber - Settings</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>');
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/settings.css" />
+</head>
+<div id="topBar">
+    <p id="windowTitle">GW2 Tabber - Settings</p>
+    <div id="buttons">
+        <a href="#" id="minimize" class="button" onClick=""><img src="image/u.png" id="u"/></a><a href="#" id="close" onClick="" class="button"><img src="image/x.png" id="x"/></a>
+    </div>
+</div>
+
+<body>
+    <div id="bodyMain">
+        <label for="retain" title="Enable or Disable the automatic rentention of Tab on close or instrument change">Retain Last Entered Tab</label>
+        <input type="checkbox" name="retain" id="retain" class="checkbox">
+        <br>
+        <label for="aSpace" title="Enable or Disable the automatic insertion of spaces in the tab">Enable Automatic Spacing</label>
+        <input type="checkbox" name="aSpace" id="aSpace" class="checkbox">
+        <br>
+        <label for="spaceDelay" id="spaceLabel" title="Delay before a space is added (in miliseconds)">Delay:</label>
+        <input id="spaceDelay" name="value" title="Delay before a space is added (in miliseconds)">
+        <br>
+        <div class=volume>Volume: <span id=vol>0</span></div>
+        <div class="volume" id="volume"></div>
+        <div id="export" class="export" title="Path to export files to">Default Export Path</div>
+        <div id='exportPath' class="export"></div>
+        <input type="file" id="ctrl" class="export" webkitdirectory directory/>
+    </div>
+    </div>
+</body>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+require('./js/settings.js');
+</script>
