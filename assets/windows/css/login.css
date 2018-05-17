@@ -1,0 +1,326 @@
+body {
+    background-color: #464646;
+    opacity: 0.1 color: white;
+    color: white;
+}
+
+#bodyMain {
+    padding-top: 30px
+}
+
+a {
+    color: #7289DA;
+}
+
+.title {
+    color: #FFFFFF;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.info {
+    color: #858585;
+    text-align: left;
+    padding-left: 10px;
+}
+
+
+#settings {
+    padding: 3px;
+    margin-right: 10px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    clear: both;
+    float: left;
+}
+
+#settings:active {
+    border: 1px inset #36393E;
+}
+
+
+#topBar {
+    position: fixed;
+    -webkit-app-region: drag;
+    background-color: #2C2D2D;
+    color: gray;
+    width: 100%;
+    top: 0px;
+    clear: both;
+    right: 0px;
+    height: 30px;
+    margin-bottom: 10px;
+    border-color: #23272A;
+    border-width: 1px;
+}
+
+#topBar p {
+    position: absolute;
+    top: -10px;
+    left: 5px;
+}
+
+#buttons {
+    position: absolute;
+    -webkit-app-region: no-drag;
+    top: 0px;
+    right: 0px;
+    height: 28px;
+    width: 60px;
+    background-color: #2A2F33;
+    border: 1px outset #36393E;
+}
+
+.button:active {
+    border: 1px inset #36393E;
+}
+
+#buttons #minimize {
+    -webkit-app-region: no-drag;
+    float: left;
+    margin: 0;
+    padding: 5px;
+}
+
+
+#buttons img {
+    padding: 3px;
+    height: 10px;
+    width: 10px;
+}
+
+#buttons #minimize img {
+    height: 5px;
+}
+
+
+#buttons #close {
+    -webkit-app-region: no-drag;
+    float: right;
+    margin: 0;
+    padding: 4px;
+}
+
+a:link {
+    filter: grayscale();
+}
+
+a:hover {
+    filter: none;
+}
+
+a {
+    -webkit-app-region: no-drag;
+}
+
+#main {
+    padding: 20px;
+    padding-top: 40px;
+}
+
+html {
+    overflow: none;
+}
+
+#volume {
+    color: white !important;
+    width: 80px !important;
+    margin-top: 10px;
+    margin-left: 14px;
+}
+
+#spaceLabel {
+    color: white !important;
+    width: 80px !important;
+    margin-top: 10px;
+    margin-left: 14px;
+    width: 40px;
+}
+
+#spaceDelay {
+    width: 60px;
+}
+
+.volume {
+    color: white !important;
+    margin-top: 10px;
+    margin-left: 14px;
+}
+
+.ui-widget {
+    font-size: 10px !important;
+}
+
+.ui-button {
+    border-style: none !important;
+    color: white !important;
+    background: none !important;
+}
+
+.ui-button:focus {
+    outline: none !important;
+}
+
+.ui-icon-background,
+.ui-state-active .ui-icon-background {
+    background-color: rgb(226, 226, 226)!important;
+}
+
+.ui-corner-all {
+    border-radius: 0px !important;
+}
+
+.ui-spinner-input {
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0 !important;
+    margin: 0 !important;
+    vertical-align: middle;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.ui-spinner-input:focus {
+    outline: none;
+}
+
+textarea {
+    border: none;
+    resize: none;
+    height: 15px;
+    overflow: none;
+    font-family: Tahoma, sans-serif;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.export {
+    color: white;
+    margin-left: 14px;
+    padding-top: 5px;
+}
+
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+    width: auto;
+    padding: 10px 18px;
+    background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+    position: relative;
+}
+
+img.avatar {
+    width: 40%;
+    border-radius: 50%;
+}
+
+.container {
+    padding: 16px;
+}
+
+span.psw {
+    float: right;
+    padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)} 
+    to {-webkit-transform: scale(1)}
+}
+    
+@keyframes animatezoom {
+    from {transform: scale(0)} 
+    to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    .cancelbtn {
+       width: 100%;
+    }
+}

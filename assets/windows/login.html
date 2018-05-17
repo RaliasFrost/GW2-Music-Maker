@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title id="title">GW2 Tabber - Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+    !window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>');
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+</head>
+<div id="topBar">
+    <p id="windowTitle">GW2 Tabber - Login</p>
+    <div id="buttons">
+        <a href="#" id="minimize" class="button" onClick=""><img src="image/u.png" id="u"/></a><a href="#" id="close" onClick="" class="button"><img src="image/x.png" id="x"/></a>
+    </div>
+</div>
+
+<body>
+    <div id="bodyMain">
+        <div id='loginInfo' style="display: none;"><p>Logged In!<br>Username: <span id="username"></span></p><button type="logout" id="logout">Logout</button></div>
+        <div id="loginButton"><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+
+<div id="id01" class="modal">
+  
+  <div class="modal-content animate">
+
+
+    <div class="container">
+      <label for="uname"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="uname" id="user" required>
+
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" id="pass" required>
+        
+      <button type="login" id="login">Login</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script></div> 
+    </div>
+    </div>
+</body>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+require('./js/login.js');
+</script>

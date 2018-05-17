@@ -8,6 +8,10 @@ const {
 ipc.on('settingsChange', (event, arg) => {
     settings[arg.name] = arg.val;
 });
+ipc.on('login', (event, arg) => {
+    localStorage.setItem('user', arg.user);
+    localStorage.setItem('loginToken', arg.token);
+});
 /******************************************************************************/
 /* Global letiables                                                           */
 /******************************************************************************/
@@ -862,6 +866,9 @@ $(document).ready(function() {
                 let textArea = $('#songarea').val();
                 if (/debug/i.test(textArea)) {
                     ipc.send("debug", null);
+                    $('#songarea').val("");
+                } else if (/login/i.test(textArea)) {
+                    ipc.send("login", 'open');
                     $('#songarea').val("");
                 } else if (/beemovie/i.test(textArea)) {
                     $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
