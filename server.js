@@ -151,7 +151,7 @@ let connectionID = 0;
 const processMessages = (message, ws) => {
 	if (connections[ws.id].key == undefined) {
 		connections[ws.id].key = new NodeRSA(message, 'public');
-		connections[ws.id].send(connections[ws.id].key.encrypt('{"KeyExchange": "Successful"'));
+		connections[ws.id].send(connections[ws.id].key.encrypt('{"KeyExchange": "Successful"}'));
 	} else {
 		message = key.decrypt(message);
 		let messageJSON = JSON.parse(message);
