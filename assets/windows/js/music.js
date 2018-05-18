@@ -870,6 +870,14 @@ $(document).ready(function() {
                 } else if (/login/i.test(textArea)) {
                     ipc.send("login", 'open');
                     $('#songarea').val("");
+                } else if (/spinmerightround/i.test(textArea)) {
+                    $('div').addClass('fa-spin');
+                    $('a').addClass('fa-spin');
+                    $('#songarea').val("");
+                } else if (/aahstop!/i.test(textArea)) {
+                    $('div').removeClass('fa-spin');
+                    $('a').removeClass('fa-spin');
+                    $('#songarea').val("");
                 } else if (/beemovie/i.test(textArea)) {
                     $.get("https://gist.githubusercontent.com/ajn0592/6ae63abd1834485811200daefc319b40/raw/2411e31293a35f3e565f61e7490a806d4720ea7e/bee%2520movie%2520script", function(data) {
                         $("#songarea").val(data);
