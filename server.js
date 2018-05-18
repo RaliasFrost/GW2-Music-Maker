@@ -1,5 +1,6 @@
 const fs = require('fs');
 const https = require('https');
+const moment = require('moment');
 const privateKey = fs.readFileSync('./privkey.pem', 'utf8');
 const certificate = fs.readFileSync('./fullchain.pem', 'utf8');
 const bcrypt = require('bcrypt');
@@ -27,7 +28,7 @@ db.ensureIndex({
 });
 const storePassword = userInfo => {
 	return new Promise((resolve, reject) => {
-		bcrypt.hash(userInfo.password, saltRounds, (err, hash) => {
+		bcrypt.hash(userInfo.password, 10, (err, hash) => {
 			if (err) reject(err);
 			else {
 				if (userInfo.update) {
@@ -62,10 +63,12 @@ const storePassword = userInfo => {
 							});
 						}
 				} else {
-					console.log(userInfo, hash);
 					db.insert({
 						user: userInfo.user,
 						userEmail: userInfo.email,
+						admin: false,
+						moderator: false,
+						approved: false,
 						password: hash
 					}, (err, doc) => {
 						if (err) reject(err);
@@ -144,17 +147,17 @@ let wss = new WebSocketServer({
 });
 let connections = {};
 let connectionID = 0;
+
 const processMessages = (message, ws) => {
 	if (connections[ws.id].key == undefined) {
-		console.log('Firstbuffer');
 		connections[ws.id].key = new NodeRSA(message, 'public');
 		connections[ws.id].send(connections[ws.id].key.encrypt('{"KeyExchange": "Successful"'));
 	} else {
 		message = key.decrypt(message);
-		console.log(message)
 		let messageJSON = JSON.parse(message);
-		console.log('received: %s', message, messageJSON);
+		console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')} New Message, Processing`)
 		if (messageJSON.login) checkPassword(messageJSON.info).then(() => {
+			console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')} User Login!: ${messageJSON.info.user}`)
 			let loginToken = connections[ws.id].key.encrypt(messageJSON.info, 'base64');
 			tokens.find({
 				user: messageJSON.info.user
@@ -164,7 +167,7 @@ const processMessages = (message, ws) => {
 					user: messageJSON.info.user,
 					token: loginToken
 				});
-			})
+			});
 			let returnMessage = {
 				login: true,
 				loginToken: loginToken,
@@ -178,6 +181,7 @@ const processMessages = (message, ws) => {
 			db.find({
 				userEail: messageJSON.info.email
 			}, (e, r) => {
+				console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')} New User Cration!: ${messageJSON.info.user}`)
 				if (r.length == 0) storePassword(messageJSON.info).then(() => {
 					let loginToken = connections[ws.id].key.encrypt(messageJSON.info, 'base64');
 					tokens.insert({
@@ -190,18 +194,24 @@ const processMessages = (message, ws) => {
 						user: messageJSON.info.user
 					};
 					connections[ws.id].send(connections[ws.id].key.encrypt(JSON.stringify(returnMessage)));
-				}).catch(e => console.log(e));
+				}).catch(e => {
+					let returnMessage = {
+						accountCreation: true,
+						successful: false
+					};
+					connections[ws.id].send(connections[ws.id].key.encrypt(JSON.stringify(returnMessage)));
+				});
 			});
 		}
 		if (messageJSON.logout) {
 			tokens.remove({
 				token: messageJSON.token
-			})
+			});
 		}
 	}
 };
 wss.on('connection', (ws, req) => {
-	console.log(`New Connection! IP: ${req.connection.remoteAddress}`);
+	console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')} New Connection! IP: ${req.connection.remoteAddress}`);
 	ws.id = connectionID++;
 	ws.firstBuffer = 1;
 	connections[ws.id] = ws;

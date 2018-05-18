@@ -8,6 +8,7 @@
     <script>
     !window.jQuery && document.write('<script src="js/jquery-3.2.1.min.js"><\/script>');
     </script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/login.css" />
 </head>
 <div id="topBar">
@@ -19,8 +20,15 @@
 
 <body>
     <div id="bodyMain">
+        <div style="display: none" id="loggingIn" class="message"> <i class="fa fa-spinner fa-spin" style="font-size:24px;" > </i><span> Logging In... <br> This could take like 15 Seconds, be patient</span></div>
+        <div style="display: none" id="creatingAccount"> <i class="fa fa-spinner fa-spin" style="font-size:24px;" id="creatingAccount" class="message"></i><span> Creating Account... <br> This could take like 15 Seconds, be patient</span></div>
+        <i class="fas fa-exclamation-triangle" style="font-size:24px;color:red;display: none" id="lFail" class="message"> Login Failed! <br> (Note, The server could be slow, give it 30 seconds, if problem persists contact Ralias)</i>
+        <i class="fas fa-exclamation-triangle" style="font-size:24px;color:red;display: none" id="caFail" class="message"> Account Creation Failed! <br> (Note, The server could be slow, give it 30 seconds, if problem persists contact Ralias)</i>
+        <i class="fas fa-exclamation-triangle" style="font-size:24px;color:red;display: none" id="caExists" class="message"> Account Already Exists! <br> (Try logging in, or contacting Ralias)</i>
         <div id='loginInfo' style="display: none;"><p>Logged In!<br>Username: <span id="username"></span></p><button type="logout" id="logout">Logout</button></div>
-        <div id="loginButton"><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+        <div id="loginButton" class="buttons"><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button></div>
+        <div id="createAccount" class="buttons"><button onclick="document.getElementById('id01').style.display='block';" style="width:auto;">Create Account</button></div>
+
 
 <div id="id01" class="modal">
   
@@ -30,10 +38,13 @@
     <div class="container">
       <label for="uname"><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" id="user" required>
+      <label for="email"><b>Email</b></label>
+
+      <input type="text" placeholder="Enter Email" name="email" id="email" style="display: none">
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" id="pass" required>
-        
+      <button type="create" id="create" style="display: none;">Create Account</button>  
       <button type="login" id="login">Login</button>
     </div>
 

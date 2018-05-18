@@ -2,6 +2,7 @@ const electron = require('electron');
 const app = electron.app;
 /*Encryption and Server Conenction*/
 var NodeRSA = require('node-rsa');
+const moment = require('moment')
 let firstBuffer = true;
 var serverKey;
 const key = new NodeRSA({
@@ -9,6 +10,7 @@ const key = new NodeRSA({
 });
 var ws;
 var WebSocket = require('ws');
+let messageQueue
 const makeClient = () => {
     ws = new WebSocket('wss://login.ratchtnet.com:8484');
     ws.on('open', function open() {
@@ -17,15 +19,23 @@ const makeClient = () => {
                 serverKey = new NodeRSA(message, 'public');
                 firstBuffer = 0;
                 ws.send(key.exportKey('public'));
+                if (messageQueue) {
+                    ws.send(serverKey.encrypt(messageQueue));
+                    messageQueue = false;
+                }
             } else {
                 try {
                     message = key.decrypt(message);
                     console.log('Message:' + message);
                     message = JSON.parse(message);
-                    if (message.login == true) intro.send('login', {
-                        user: message.user,
-                        token: message.loginToken
-                    });
+                    if (message.login == true) {
+                        login.send('login', "loggedIn")
+                        intro.send('login', {
+                            user: message.user,
+                            token: message.loginToken
+                        });
+                    } else if (message.accountCreation == true)
+                        if (message.successful != true) login.send('accountCreation', message.info)
                 } catch (e) {
                     //console.log(e);
                 }
@@ -167,6 +177,9 @@ const createWindow = () => {
     }));
     intro.on('closed', function() {
         if (settingsW) settingsW.close();
+        if (libary) libary.close();
+        if (fileSave) fileSave.close();
+        if (login) login.close();
         intro = null;
     });
 };
@@ -191,14 +204,41 @@ ipc.on('debug', () => {
     if (settingsW) settingsW.webContents.openDevTools();
     if (libary) libary.webContents.openDevTools();
     if (login) login.webContents.openDevTools();
-
 });
 ipc.on('log', function(event, arg) {
     console.log(arg);
 });
 ipc.on('logout', (e, a) => {
-    ws.send(serverKey.encrypt(`{"logout":true, "token" : ${a}}`))
-})
+    if (ws.readyState == 3) {
+        makeClient();
+        messageQueue = `{"logout":true, "token" : ${a}}`
+    } else {
+        console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')}: Sending Logout`)
+        ws.send(serverKey.encrypt(`{"logout":true, "token" : "${a}"}`));
+    }
+});
+ipc.on(`login`, (e, a) => {
+    if (ws.readyState == 3) {
+        makeClient();
+        messageQueue = `{"login":true, "info": {"user": "${a.user}", "password": "${a.password}"}}`;
+    } else {
+        if (a.user != undefined) {
+            console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')}: Sending Login`)
+            ws.send(serverKey.encrypt(`{"login":true, "info": {"user": "${a.user}", "password": "${a.password}"}}`));
+        }
+    }
+});
+ipc.on('createAccount', (e, a) => {
+    if (ws.readyState == 3) {
+        makeClient();
+        messageQueue = `{"newUser":true, "info":{"user": "${a.user}", "password": "${a.password}", "email": "${a.email}"}}`;
+    } else {
+        if (a.user != undefined) {
+            console.log(`${moment(Date.now()).format('MMMM Do YYYY, hh:mm:ss a')}: Sending Account Creation`)
+            ws.send(serverKey.encrypt(`{"newUser":true, "info":{"user": "${a.user}", "password": "${a.password}", "email": "${a.email}"}}`));
+        }
+    }
+});
 app.on('ready', () => {
     createWindow();
 });
